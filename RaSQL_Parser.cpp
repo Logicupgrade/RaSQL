@@ -14,25 +14,41 @@ bool RaSQL_Parser::parse(string cmd_str)
 {
 	bool isLastCmd = false;
 	
+	int endCmdStr = cmd_str.length()-1;
 	int frontIndex = 0;
 	int endIndex;
 	string command;
+	string leftOverStr;
 
 	while(!isLastCmd)
 	{
-		endIndex = cmd_str.find(" ");
+		
+		leftOverStr = cmd_str;
+		leftOverStr = leftOverStr.substr(frontIndex,endCmdStr);
+
+		endIndex = leftOverStr.find(" ");
+
+		cout<<"front index check:"<<frontIndex<<endl;
+		cout<<"end index check:"<<endIndex<<endl;
+		cout<<"LeftoverStr check:"<<leftOverStr<<endl;
 		//checks for last command and then gets rid of ";"
-		if(endIndex == -1 )
+		if( endIndex == -1 || ( frontIndex > int(endCmdStr) ) )
 		{
-			endIndex = (cmd_str.length()-1);
+			endIndex = (endCmdStr - frontIndex);
 			isLastCmd = true;
 		}
 
-		command = cmd_str.substr(frontIndex,endIndex);
+		command = leftOverStr.substr(0,endIndex);
 
-		cout<<"Command: "<<command<<endl;
+		cout<<"LeftoverStr:"<<leftOverStr<<endl;
 
-		frontIndex = endIndex+1;
+		cout<<"front Index:"<<frontIndex<<endl;
+		cout<<"end Index:"<<endIndex<<endl;
+
+		cout<<"Command:"<<command<<"|"<<endl;
+
+		frontIndex += endIndex+1;
+		
 	}
 	
 	return true;
