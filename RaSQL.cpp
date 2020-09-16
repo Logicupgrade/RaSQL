@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 
+#include "RaSQL_Parser.cpp"
+
 using namespace std;
 
 string strToLower(int strLength, string theString);
@@ -11,13 +13,23 @@ int main(int argc, char** argv)
     string DBCommand;
     bool isGood = true;
 
+    RaSQL_Parser the_parser;
+
+    cout<<"Welcome to RaSQL Database Manager"<<endl;
+
     while(isGood)
     {
         cout<<">>";
         getline(cin,DBCommand);
+
         DBCommand = strToLower( DBCommand.length(), DBCommand );
-        cout<<DBCommand<<endl;
+        
+        the_parser.parse(DBCommand);
+
+        //cout<<DBCommand<<endl;
         cout<<"size:"<<DBCommand.length()<<endl;
+
+
 
         //Exit Conditions
         if(cin.eof() || DBCommand == ".exit")
