@@ -12,12 +12,29 @@ RaSQL_Parser::RaSQL_Parser()
 
 bool RaSQL_Parser::parse(string cmd_str)
 {
-	string delim1 = " ";
-	string delim2 = ";";
+	bool isLastCmd = false;
+	
+	int frontIndex = 0;
+	int endIndex;
+	string command;
 
-	string command = cmd_str.substr(0,cmd_str.find(delim1));
+	while(!isLastCmd)
+	{
+		endIndex = cmd_str.find(" ");
+		//checks for last command and then gets rid of ";"
+		if(endIndex == -1 )
+		{
+			endIndex = (cmd_str.length()-1);
+			isLastCmd = true;
+		}
 
-	cout<<"First Command: "<<command<<endl;
+		command = cmd_str.substr(frontIndex,endIndex);
+
+		cout<<"Command: "<<command<<endl;
+
+		frontIndex = endIndex+1;
+	}
+	
 	return true;
 }
 
