@@ -11,7 +11,7 @@ class RaSQL_Parser
 		string RaSQL_Table_commands[3] = {"create","alter","drop"};
 
 	public:
-		string Parsed_commands[6] = {"","","","","",""};
+		string commandArray[10] = {"","","","","","","","","",""};
 		string 	DB_name = ".RaSQL";
 		string 	Table_name = "";
 

@@ -21,18 +21,17 @@ int main(int argc, char** argv)
     {
         cout<<">>";
         getline(cin,DBCommand);
-
         DBCommand = strToLower( DBCommand.length(), DBCommand );
         
         the_parser.parse(DBCommand);
 
-        //cout<<DBCommand<<endl;
-        cout<<"size:"<<DBCommand.length()<<endl;
-
-
+        // for(int i =0;i<10;i++)
+        // {
+        //     cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+        // }
 
         //Exit Conditions
-        if(cin.eof() || DBCommand == ".exit")
+        if(cin.eof() || the_parser.commandArray[0] == ".exit")
         {
             isGood = false;
         }
