@@ -9,6 +9,8 @@ RaSQL_Parser::RaSQL_Parser()
 
 bool RaSQL_Parser::parse(string cmd_str)
 {
+	clear();
+
 	bool isLastCmd = false;
 	
 	int endCmdStr = cmd_str.length()-1;

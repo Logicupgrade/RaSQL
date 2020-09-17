@@ -3,6 +3,7 @@
 #include <string>
 
 #include "RaSQL_Parser.cpp"
+#include "RaSQL_DB_Manager.cpp"
 
 using namespace std;
 
@@ -13,7 +14,8 @@ int main(int argc, char** argv)
     string DBCommand;
     bool isGood = true;
 
-    RaSQL_Parser the_parser;
+    RaSQL_Parser        the_parser;
+    RaSQL_DB_Manager    the_manager;
 
     cout<<"Welcome to RaSQL Database Manager"<<endl;
 
@@ -25,14 +27,14 @@ int main(int argc, char** argv)
         
         the_parser.parse(DBCommand);
 
-        for(int i =0;i<10;i++)
-        {
-            cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
-        }
+        the_manager.manage_input(the_parser.commandArray,the_parser.commandArraySize);
 
-        
-
-        cout<<endl;
+        //debugging
+        // for(int i =0;i<10;i++)
+        // {
+        //     cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+        // }
+        // cout<<endl;
 
         //Exit Conditions
         if(cin.eof() || the_parser.commandArray[0] == ".exit")
@@ -40,7 +42,6 @@ int main(int argc, char** argv)
             isGood = false;
         }
 
-        the_parser.clear();
     }
     
 }
