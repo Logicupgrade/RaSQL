@@ -17,4 +17,5 @@ class RaSQL_Parser
 
 		RaSQL_Parser();
 		bool parse(string RaSQL_command_string);
+		void clear();
 };

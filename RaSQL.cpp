@@ -25,16 +25,22 @@ int main(int argc, char** argv)
         
         the_parser.parse(DBCommand);
 
-        // for(int i =0;i<10;i++)
-        // {
-        //     cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
-        // }
+        for(int i =0;i<10;i++)
+        {
+            cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+        }
+
+        
+
+        cout<<endl;
 
         //Exit Conditions
         if(cin.eof() || the_parser.commandArray[0] == ".exit")
         {
             isGood = false;
         }
+
+        the_parser.clear();
     }
     
 }
