@@ -29,7 +29,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 		endIndex = leftOverStr.find(" ");
 
-		//checks for last command and then removes ";"
+		//checks for last command and executes parse tasks
 		if( endIndex == -1 || ( frontIndex > int(endCmdStr) ) )
 		{
 			//wonky but excludes ".exit" and "--" from removing ";"
@@ -63,6 +63,23 @@ bool RaSQL_Parser::parse(string cmd_str)
 		
 	}
 	
+	//final parsing touch-ups:
+	//excludes "(" at begining, "," at end, ")" at end
+	if(commandArray[0] == "create" && commandArray[1] == "table")
+	{
+		//remove "(" from first property of schema
+		commandArray[3] = commandArray[3].substr( 1, commandArray[3].length() );
+
+		//remove last char ( "," & ")" ) from every attribute type
+		for(int i=4;i<21;i+=2)
+		{
+			if(commandArray[i] != "")
+			{
+				commandArray[i] = commandArray[i].substr( 0, (commandArray[i].length()-1) );
+			}
+		}
+	}
+
 	return true;
 }
 

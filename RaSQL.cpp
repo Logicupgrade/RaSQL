@@ -30,7 +30,7 @@ int main(int argc, char** argv)
         the_manager.manage_input(the_parser.commandArray,the_parser.commandArraySize);
 
         //debugging
-        // for(int i =0;i<10;i++)
+        // for(int i =0;i<20;i++)
         // {
         //     cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
         // }

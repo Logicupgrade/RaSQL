@@ -11,9 +11,9 @@ class RaSQL_Parser
 		string RaSQL_Table_commands[3] = {"create","alter","drop"};
 
 	public:
-		int commandArraySize = 10;
+		int commandArraySize = 20;
 
-		string commandArray[10];
+		string commandArray[20];
 		string 	DB_name = ".RaSQL";
 		string 	Table_name = "";
 
