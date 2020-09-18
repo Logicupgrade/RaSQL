@@ -13,6 +13,7 @@ class RaSQL_DB_Manager
 		bool load_DB_file();//use currentDB
 		bool use_DB(string DB_name);//find,load
 		bool create_DBO();
+		bool create_DB_file();
 		bool delete_DB_file();//find,delete
 		
 

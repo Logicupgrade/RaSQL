@@ -18,6 +18,10 @@
 		{
 			return true;
 		}
+		bool RaSQL_DB_Manager::create_DB_file()
+		{
+			return true;
+		}
 		bool RaSQL_DB_Manager::delete_DB_file()//find,delete
 		{
 			return true;
