@@ -19,5 +19,5 @@ class RaSQL_DB_Manager
 
 	public:
 		RaSQL_DB_Manager();
-		bool manage_input(string* commands, int command_count);
+		bool manage_cmd(string* commands, int command_count);
 };

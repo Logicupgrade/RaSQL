@@ -1,4 +1,11 @@
 
+//Prompts input
+//Parses Input
+//Manages DB using Parsed Input
+    //Validates Input Command syntax
+        //if Invalid commands provides error message
+    //Executes Valid commands
+
 #include <iostream>
 #include <string>
 
@@ -27,14 +34,14 @@ int main(int argc, char** argv)
         
         the_parser.parse(DBCommand);
 
-        the_manager.manage_input(the_parser.commandArray,the_parser.commandArraySize);
+        the_manager.manage_cmd(the_parser.commandArray,the_parser.commandArraySize);
 
         //debugging
-        // for(int i =0;i<20;i++)
-        // {
-        //     cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
-        // }
-        // cout<<endl;
+        for(int i =0;i<20;i++)
+        {
+            cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+        }
+        cout<<endl;
 
         //Exit Conditions
         if(cin.eof() || the_parser.commandArray[0] == ".exit")

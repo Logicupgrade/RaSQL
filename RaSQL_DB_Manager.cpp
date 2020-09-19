@@ -31,14 +31,24 @@
 		RaSQL_DB_Manager::RaSQL_DB_Manager()
 		{
 		}
-		bool RaSQL_DB_Manager::manage_input(string* commands, int command_count)
+		bool RaSQL_DB_Manager::manage_cmd(string* commands, int command_count)
 		{
-			//making count smaller for debugging
-			command_count = 8; 
 
-			for(int i =0;i<command_count;i++)
-			{
-				cout<<"command["<<i<<"]:"<<commands[i]<<endl;
-			}
+			//
+
+
+
+
+
+
+			//making count smaller for debugging
+			// command_count = 8; 
+
+			// for(int i =0;i<command_count;i++)
+			// {
+			// 	cout<<"command["<<i<<"]:"<<commands[i]<<endl;
+			// }
+
+
 			return true;
 		}
