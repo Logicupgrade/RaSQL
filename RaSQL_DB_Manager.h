@@ -15,9 +15,12 @@ class RaSQL_DB_Manager
 		bool create_DBO();
 		bool create_DB_file();
 		bool delete_DB_file();//find,delete
+
+		int status = 0;
 		
 
 	public:
 		RaSQL_DB_Manager();
-		bool manage_cmd(string* commands, int command_count);
+		bool manage_cmd(string commandStr);//string* commands, int command_count);
+		int get_status();
 };

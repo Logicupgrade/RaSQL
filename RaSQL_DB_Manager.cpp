@@ -1,6 +1,8 @@
 
 #include "RaSQL_DB_Manager.h"
 
+#include "RaSQL_Parser.cpp"
+
 
 		bool RaSQL_DB_Manager::find_DB_file(string DB_filename)//if found update currentDB with DB name
 		{
@@ -31,15 +33,23 @@
 		RaSQL_DB_Manager::RaSQL_DB_Manager()
 		{
 		}
-		bool RaSQL_DB_Manager::manage_cmd(string* commands, int command_count)
+		bool RaSQL_DB_Manager::manage_cmd(string commandStr)//string* commands, int command_count)
 		{
 
-			//
+			//parse
+			RaSQL_Parser the_parser;
+			the_parser.parse(commandStr);
 
-
-
-
-
+			//debugging
+			for(int i =0;i<20;i++)
+			{
+				if(the_parser.commandArray[i] != "")
+				{
+					cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+				}
+			}
+			//validate
+			//execute
 
 			//making count smaller for debugging
 			// command_count = 8; 
@@ -49,6 +59,15 @@
 			// 	cout<<"command["<<i<<"]:"<<commands[i]<<endl;
 			// }
 
+			if(the_parser.commandArray[0] == ".exit")
+			{
+				status = -1;
+			}
 
 			return true;
+		}
+
+		int RaSQL_DB_Manager::get_status()
+		{
+			return status;
 		}

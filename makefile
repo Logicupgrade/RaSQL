@@ -38,7 +38,7 @@ RaSQL_Table.o : RaSQL_Table.cpp
 RaSQL_Parser.o : RaSQL_Parser.cpp
 	$(CC) $(CFLAGS)  RaSQL_Parser.cpp
 
-RaSQL_DB_Manager.o : RaSQL_DB_Manager.cpp
+RaSQL_DB_Manager.o : RaSQL_DB_Manager.cpp RaSQL_Parser.cpp
 	$(CC) $(CFLAGS)  RaSQL_DB_Manager.cpp
 
 	

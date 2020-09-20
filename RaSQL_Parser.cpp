@@ -7,6 +7,24 @@ RaSQL_Parser::RaSQL_Parser()
 	//default constructor
 }
 
+string RaSQL_Parser::strToLower(int strLength, string theString)
+{
+    char upperCase[26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+    char lowerCase[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    
+    for(int i=0;i<strLength;i++)
+    {
+        for(int j=0;j<26;j++)
+        {
+            if(theString[i] == upperCase[j])
+            {
+                theString[i] = lowerCase[j];
+            }
+        }
+    }
+    return theString;
+}
+
 bool RaSQL_Parser::parse(string cmd_str)
 {
 	clear();
@@ -21,6 +39,8 @@ bool RaSQL_Parser::parse(string cmd_str)
 	string command;
 	string leftOverStr;
 
+	cmd_str = strToLower(cmd_str.length(),cmd_str);
+	cout<<"cmd_str:"<<cmd_str<<endl;
 	while(!isLastCmd)
 	{
 		
@@ -49,13 +69,6 @@ bool RaSQL_Parser::parse(string cmd_str)
 		command = leftOverStr.substr(0,endIndex);
 
 		commandArray[commandCount] = command;
-
-		// cout<<"LeftoverStr:"<<leftOverStr<<endl;
-
-		// cout<<"front Index:"<<frontIndex<<endl;
-		// cout<<"end Index:"<<endIndex<<endl;
-
-		// cout<<"Command:"<<command<<"|"<<endl;
 
 		frontIndex += endIndex+1;
 		
