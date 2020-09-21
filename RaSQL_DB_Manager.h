@@ -6,6 +6,8 @@ using namespace std;
 class RaSQL_DB_Manager
 {
 	private:
+		int status = 0;
+
 		string* DB_list;
 		string currentDB = "";
 
@@ -15,9 +17,6 @@ class RaSQL_DB_Manager
 		bool create_DBO();
 		bool create_DB_file();
 		bool delete_DB_file();//find,delete
-
-		int status = 0;
-		
 
 	public:
 		RaSQL_DB_Manager();

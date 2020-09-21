@@ -50,18 +50,35 @@
 			}
 			//validate
 			//execute
-
-			//making count smaller for debugging
-			// command_count = 8; 
-
-			// for(int i =0;i<command_count;i++)
-			// {
-			// 	cout<<"command["<<i<<"]:"<<commands[i]<<endl;
-			// }
-
-			if(the_parser.commandArray[0] == ".exit")
+			if(the_parser.commandArray[0] == "create")
+			{
+				cout<<"create"<<endl;
+			}
+			else if(the_parser.commandArray[0] == "drop")
+			{
+				cout<<"drop"<<endl;
+			}
+			else if(the_parser.commandArray[0] == "use")
+			{
+				cout<<"use"<<endl;
+			}
+			else if(the_parser.commandArray[0] == "select")
+			{
+				cout<<"select"<<endl;
+			}
+			else if(the_parser.commandArray[0] == "alter")
+			{
+				cout<<"alter"<<endl;
+			}
+			else if(the_parser.commandArray[0] == ".exit")
 			{
 				status = -1;
+				cout<<"bye bye"<<endl;
+			}
+			else
+			{
+				cout<<"Please enter correct Command"<<endl;
+				
 			}
 
 			return true;
