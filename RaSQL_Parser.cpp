@@ -40,7 +40,9 @@ bool RaSQL_Parser::parse(string cmd_str)
 	string leftOverStr;
 
 	cmd_str = strToLower(cmd_str.length(),cmd_str);
-	cout<<"cmd_str:"<<cmd_str<<endl;
+
+	
+
 	while(!isLastCmd)
 	{
 		
@@ -50,18 +52,22 @@ bool RaSQL_Parser::parse(string cmd_str)
 		endIndex = leftOverStr.find(" ");
 
 		//checks for last command and executes parse tasks
-		if( endIndex == -1 || ( frontIndex > int(endCmdStr) ) )
+		if( endIndex == -1 )
 		{
 			//wonky but excludes ".exit" and "--" from removing ";"
-			if(leftOverStr.substr(0,endCmdStr - frontIndex) == ".exit" ||
-				( commandArray[0][0] == '-' && commandArray[0][1] == '-' ) )
-			{
-				endIndex = ( endCmdStr - frontIndex);
-			}
-			else
-			{
-				endIndex = ( endCmdStr - frontIndex - 1);
-			}
+			// if(leftOverStr.substr(0,endCmdStr - frontIndex) == ".exit" ||
+			// 	( commandArray[0][0] == '-' && commandArray[0][1] == '-' ) )
+			// {
+			// 	endIndex = ( endCmdStr - frontIndex);
+
+			// 	cout<<"here1"<<endl;
+			// }
+			// else
+			// {
+			// 	endIndex = ( endCmdStr - frontIndex) - 1;
+			
+			// 	cout<<"here2"<<endl;
+			// }
 			
 			isLastCmd = true;
 		}
@@ -77,21 +83,41 @@ bool RaSQL_Parser::parse(string cmd_str)
 	}
 	
 	//final parsing touch-ups:
-	//excludes "(" at begining, "," at end, ")" at end
+
+	//i gets last command index+1
+	int i=0;
+	while(commandArray[i] != "" || i>19)
+	{
+		i++;
+	}
+
+	if(i>1)
+	{
+		// use -2 for file input and -1 for manual input
+		commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 2) );
+	}
+	
+	
 	if(commandArray[0] == "create" && commandArray[1] == "table")
 	{
 		//remove "(" from first property of schema
 		commandArray[3] = commandArray[3].substr( 1, commandArray[3].length() );
 
-		//remove last char ( "," & ")" ) from every attribute type
-		for(int i=4;i<21;i+=2)
+		//remove last char "," from every attribute type
+		for(int j=4;j<21;j+=2)
 		{
-			if(commandArray[i] != "")
+			if(commandArray[j] != "")
 			{
-				commandArray[i] = commandArray[i].substr( 0, (commandArray[i].length()-1) );
+				commandArray[j] = commandArray[j].substr( 0, (commandArray[j].length()-1) );
 			}
 		}
+
+		
+		//commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 1) );
 	}
+
+
+
 
 	return true;
 }
