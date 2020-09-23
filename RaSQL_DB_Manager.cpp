@@ -1,9 +1,9 @@
 
-#include <fstream>
+// database reference tags '--db_reference'
+// for different file arrangment 
 
 #include "RaSQL_DB_Manager.h"
 
-#include "RaSQL_Parser.cpp"
 
 
 		bool RaSQL_DB_Manager::find_DB_file(string DB_filename)//if found update currentDB with DB name
@@ -38,6 +38,8 @@
 		bool RaSQL_DB_Manager::manage_cmd(string commandStr)//string* commands, int command_count)
 		{
 
+			int error_code = 0;
+
 			//parse
 			RaSQL_Parser the_parser;
 			the_parser.parse(commandStr);
@@ -69,6 +71,7 @@
 					ifstream db_stream;
 					db_stream.open(db_filename);
 
+					//database exists.. will not create database
 					if( db_stream.good() )
 					{
 						db_stream.close();
@@ -76,23 +79,27 @@
 						cout<<"Did not create DB. DB '"<<the_parser.commandArray[2]<<"\' already exists"<<endl;
 					}
 					
+					//database doesn't exist..create database
 					else
 					{
 						ofstream db_create_stream(db_filename);
 						db_create_stream.close();
-						cout<<"Created DB '"<<the_parser.commandArray[2]<<endl;
+						cout<<"Created DB '"<<the_parser.commandArray[2]<<"'"<<endl;
 					}
 					
 					cout<<"create file exists?: "<<db_stream.good()<<endl;
 				}
+				
 				//create table
 				else if(the_parser.commandArray[1] == "table")
 				{
-					string table_filename = "RaSQL_tables/" + the_parser.commandArray[2] + ".txt";
+															//--db_reference
+					string table_filename = "RaSQL_tables/" + currentDB +"-"+ the_parser.commandArray[2] + ".txt";
 
 					ifstream table_stream;
 					table_stream.open(table_filename);
 
+					//table exists..will not create table
 					if( table_stream.good() )
 					{
 						table_stream.close();
@@ -100,6 +107,7 @@
 						cout<<"Did not create DB. DB '"<<the_parser.commandArray[2]<<"\' already exists"<<endl;
 					}
 					
+					//table doesn't exist..create table
 					else
 					{
 						ofstream table_create_stream;
@@ -125,10 +133,76 @@
 			else if(the_parser.commandArray[0] == "drop")
 			{
 				cout<<"drop"<<endl;
+
+				//Drop Database
+				if(the_parser.commandArray[1] == "database")
+				{
+					string db_filename = "RaSQL_dbs/" + the_parser.commandArray[2] + ".txt";
+					const char* db_filename_cstr = db_filename.c_str();
+
+					ifstream db_stream;
+					db_stream.open(db_filename);
+
+					//database exists..drop database
+					if( db_stream.good() )
+					{
+						db_stream.close();
+
+						//removes database and creates error code on fail
+						if(remove(db_filename_cstr) != 0)
+						{
+							error_code = 2;
+						}
+
+						cout<<"Dropped database '"<<the_parser.commandArray[2]<<"'"<<endl;
+					}
+
+					//database doesn't exist..will not drop database
+					else
+					{
+						cout<<"Can't drop database '"<<the_parser.commandArray[2]<<"\'. It does not exist."<<endl;
+					}
+				}
+
+				//Drop Table
+				else if(the_parser.commandArray[1] == "table")
+				{
+															//--db_reference
+					string table_filename = "RaSQL_tables/" + currentDB +"-"+ the_parser.commandArray[2] + ".txt";
+					const char* table_filename_cstr = table_filename.c_str();
+
+					ifstream table_stream;
+					table_stream.open(table_filename);
+
+					//database exists..drop database
+					if( table_stream.good() )
+					{
+						table_stream.close();
+
+						//removes database and creates error code on fail
+						if(remove(table_filename_cstr) != 0)
+						{
+							error_code = 2;
+						}
+
+						cout<<"Dropped table '"<<the_parser.commandArray[2]<<"'"<<endl;
+					}
+
+					//database doesn't exist..will not drop database
+					else
+					{
+						cout<<"Can't drop table '"<<the_parser.commandArray[2]<<"\'. It does not exist."<<endl;
+					}
+				}
+
 			}
+
+			//Use Command
 			else if(the_parser.commandArray[0] == "use")
 			{
 				cout<<"use"<<endl;
+				currentDB = the_parser.commandArray[2];
+				cout<<"Using database '"<<the_parser.commandArray[2]<<"'"<<endl;
 			}
 			else if(the_parser.commandArray[0] == "select")
 			{
@@ -149,7 +223,16 @@
 				
 			}
 
-			return true;
+			//error code (0=Good,1)
+			if(error_code == 0)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			
 		}
 
 		int RaSQL_DB_Manager::get_status()

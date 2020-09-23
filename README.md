@@ -1,6 +1,6 @@
 # RaSQL
 
 DB naming convention:
-<DB name>.rdb
+<DB name>.txt
 table naming convention:
-<DB name>-<Table name>.rt
+<DB name>-<Table name>.txt

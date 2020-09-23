@@ -6,6 +6,11 @@
         //if Invalid commands provides error message
     //Executes Valid commands
 
+//**** Notes ****
+    //using naming conventions for table files (<DB name>-<Table name>.txt)
+    //using premade directories(RaSQL_dbs,RaSQL_tables,RaSQL_data)
+    //don't know how to make directories in c++
+
 #include <iostream>
 #include <string>
 
