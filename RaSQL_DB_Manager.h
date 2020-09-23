@@ -3,6 +3,7 @@
 #include <iostream>
 
 using namespace std;
+
 class RaSQL_DB_Manager
 {
 	private:
