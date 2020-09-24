@@ -88,7 +88,7 @@
 						cout<<"Database '"<<the_parser.commandArray[2]<<"\' created."<<endl;
 					}
 					
-					cout<<"create file exists?: "<<db_stream.good()<<endl;
+					//cout<<"create file exists?: "<<db_stream.good()<<endl;
 				}
 				
 				//create table
@@ -127,15 +127,15 @@
 					}
 
 					//print attributes
-					for(int i = 3; i<command_count;i++)
-					{
-						cout<<the_parser.commandArray[i]<<" ";
-						if(i%2 == 1 && (i<command_count-1) )
-						{
-							cout<<"| ";
-						}
-					}
-					cout<<endl;
+					// for(int i = 3; i<command_count;i++)
+					// {
+					// 	cout<<the_parser.commandArray[i]<<" ";
+					// 	if(i%2 == 1 && (i<command_count-1) )
+					// 	{
+					// 		cout<<"| ";
+					// 	}
+					// }
+					// cout<<endl;
 					
 				}
 			}
@@ -214,7 +214,7 @@
 				//cout<<"use"<<endl;
 
 				current_database = the_parser.commandArray[1];
-				cout<<"Using database '"<<current_database<<"'"<<endl;
+				cout<<"Using Database '"<<current_database<<"'"<<endl;
 			}
 
 			//Select Command
@@ -263,7 +263,7 @@
 				else
 				{
 					error_code = 4;
-					cout<<"Table '"<<the_parser.commandArray[3]<<"' not found"<<endl;
+					cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
 				}
 				
 
@@ -271,13 +271,33 @@
 			}
 			else if(the_parser.commandArray[0] == "alter")
 			{
-				cout<<"alter"<<endl;
+				//cout<<"alter"<<endl;
+				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
+				ofstream table_stream(table_filename,ifstream::app);
+				table_stream.open(table_filename);
+
+				//table is found..proceed with commands
+				if( table_stream.good() )
+				{
+					//if alter command is add
+					if( the_parser.commandArray[3] == "add" )
+					{
+						table_stream<<the_parser.commandArray[4]<<","<<the_parser.commandArray[5]<<",";
+					}
+				}
+				
+				// table is not found.. can not alter table
+				else
+				{
+					cout<<"!Failed to alter table '"<<the_parser.commandArray[2]<<"\' because it doesn't exist."<<endl;
+				}
+				
 			}
 			else if(the_parser.commandArray[0] == ".exit")
 			{
 				//exit status
 				status = -1;
-				cout<<"bye bye"<<endl;
+				cout<<"All done"<<endl;
 			}
 			else
 			{
@@ -300,7 +320,8 @@
 				else if (error_code == 4){error_string = "select";}
 				else if (error_code == 5){error_string = "Alter";}
 				
-				cout<<"****Error with '"<<error_string<<"' command****"<<endl;
+				//debug
+				//cout<<"****Error with '"<<error_string<<"' command****"<<endl;
 				return false;
 			}
 			
