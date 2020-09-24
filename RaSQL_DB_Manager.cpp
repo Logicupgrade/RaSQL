@@ -35,7 +35,7 @@
 		{
 		}
 
-		bool RaSQL_DB_Manager::manage_cmd(string commandStr)//string* commands, int command_count)
+		bool RaSQL_DB_Manager::manage_cmd(string commandStr, string& current_database)//string* commands, int command_count)
 		{
 
 			int error_code = 0;
@@ -94,7 +94,7 @@
 				else if(the_parser.commandArray[1] == "table")
 				{
 															//--db_reference
-					string table_filename = "RaSQL_tables/" + currentDB +"-"+ the_parser.commandArray[2] + ".txt";
+					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
 
 					ifstream table_stream;
 					table_stream.open(table_filename);
@@ -168,7 +168,7 @@
 				else if(the_parser.commandArray[1] == "table")
 				{
 															//--db_reference
-					string table_filename = "RaSQL_tables/" + currentDB +"-"+ the_parser.commandArray[2] + ".txt";
+					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
 					const char* table_filename_cstr = table_filename.c_str();
 
 					ifstream table_stream;
@@ -201,8 +201,8 @@
 			else if(the_parser.commandArray[0] == "use")
 			{
 				cout<<"use"<<endl;
-				currentDB = the_parser.commandArray[2];
-				cout<<"Using database '"<<the_parser.commandArray[2]<<"'"<<endl;
+				current_database = the_parser.commandArray[1];
+				cout<<"Using database '"<<current_database<<"'"<<endl;
 			}
 			else if(the_parser.commandArray[0] == "select")
 			{

@@ -22,6 +22,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     string              DBCommand;
+    string              current_DB;
     bool                isGood = true;
     RaSQL_DB_Manager    the_manager;
 
@@ -33,7 +34,7 @@ int main(int argc, char** argv)
         getline(cin,DBCommand);
         cout<<endl;
 
-        the_manager.manage_cmd(DBCommand);
+        the_manager.manage_cmd(DBCommand, current_DB);
         
         //Exit Conditions
         if(cin.eof() || (the_manager.get_status() == -1) )

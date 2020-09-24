@@ -14,7 +14,7 @@ class RaSQL_DB_Manager
 		int status = 0;
 
 		string* DB_list;
-		string currentDB = "";
+		//string currentDB = "";
 
 		bool find_DB_file(string DB_filename);//if found update currentDB with DB name
 		bool load_DB_file();//use currentDB
@@ -25,6 +25,6 @@ class RaSQL_DB_Manager
 
 	public:
 		RaSQL_DB_Manager();
-		bool manage_cmd(string commandStr);//string* commands, int command_count);
+		bool manage_cmd(string commandStr, string& current_database);//string* commands, int command_count);
 		int get_status();
 };
