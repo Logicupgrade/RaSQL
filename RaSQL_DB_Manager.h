@@ -1,7 +1,9 @@
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <stdio.h>
 
 #include "RaSQL_Parser.cpp"

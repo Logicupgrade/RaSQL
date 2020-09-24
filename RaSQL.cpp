@@ -26,13 +26,13 @@ int main(int argc, char** argv)
     bool                isGood = true;
     RaSQL_DB_Manager    the_manager;
 
-    cout<<"Welcome to RaSQL Database Manager"<<endl;
+    //cout<<"Welcome to RaSQL Database Manager"<<endl;
 
     while(isGood)
     {
-        cout<<">>";
+        //cout<<">>";
         getline(cin,DBCommand);
-        cout<<endl;
+        //cout<<endl;
 
         the_manager.manage_cmd(DBCommand, current_DB);
         
