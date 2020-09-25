@@ -105,7 +105,7 @@
 					{
 						table_stream.close();
 
-						cout<<"!Failed to create table '"<<the_parser.commandArray[2]<<"\' because it already exists"<<endl;
+						cout<<"!Failed to create table '"<<the_parser.commandArray[2]<<"\' because it already exists."<<endl;
 					}
 					
 					//table doesn't exist..create table
@@ -171,7 +171,7 @@
 					//database doesn't exist..will not drop database
 					else
 					{
-						cout<<"!Failed to delete '"<<the_parser.commandArray[2]<<"\'. because it does not exist."<<endl;
+						cout<<"!Failed to delete '"<<the_parser.commandArray[2]<<"\' because it does not exist."<<endl;
 					}
 				}
 
@@ -202,7 +202,7 @@
 					//table doesn't exist..will not drop table
 					else
 					{
-						cout<<"Failed to delete '"<<the_parser.commandArray[2]<<"\'. because it does not exist."<<endl;
+						cout<<"Failed to delete '"<<the_parser.commandArray[2]<<"\' because it does not exist."<<endl;
 					}
 				}
 
@@ -273,16 +273,17 @@
 			{
 				//cout<<"alter"<<endl;
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
-				ofstream table_stream(table_filename,ifstream::app);
-				table_stream.open(table_filename);
+				ofstream table_stream;
+				table_stream.open(table_filename,ios::app);
 
 				//table is found..proceed with commands
-				if( table_stream.good() )
+				if( table_stream.good() == 1 )
 				{
 					//if alter command is add
 					if( the_parser.commandArray[3] == "add" )
 					{
 						table_stream<<the_parser.commandArray[4]<<","<<the_parser.commandArray[5]<<",";
+						cout<<"Table '"<<the_parser.commandArray[2]<<"\' modified."<<endl;
 					}
 				}
 				
