@@ -31,7 +31,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 	bool isLastCmd = false;
 	
-	int endCmdStr = cmd_str.length()-1;
+	int endCmdStr = cmd_str.length();//-1;
 	int frontIndex = 0;
 	int endIndex;
 	int commandCount = 0;
@@ -55,23 +55,21 @@ bool RaSQL_Parser::parse(string cmd_str)
 		if( endIndex == -1 )
 		{
 			//wonky but excludes ".exit" and "--" from removing ";"
-			// if(leftOverStr.substr(0,endCmdStr - frontIndex) == ".exit" ||
-			// 	( commandArray[0][0] == '-' && commandArray[0][1] == '-' ) )
-			// {
-			// 	endIndex = ( endCmdStr - frontIndex);
-
-			// 	cout<<"here1"<<endl;
-			// }
-			// else
-			// {
-			// 	endIndex = ( endCmdStr - frontIndex) - 1;
-			
-			// 	cout<<"here2"<<endl;
-			// }
+			if(leftOverStr.substr(0,endCmdStr - frontIndex) == ".exit" ||
+				( commandArray[0][0] == '-' && commandArray[0][1] == '-' ) )
+			{
+				endIndex = ( endCmdStr - frontIndex);
+			}
+			//takes into account carriage return char from file input
+			else if(leftOverStr.substr(0,endCmdStr - frontIndex-1) == ".exit" )
+			{
+				endIndex = ( endCmdStr - frontIndex-1);
+			}
 			
 			isLastCmd = true;
 		}
 
+		//**-1 as endIndex will return entire string
 		command = leftOverStr.substr(0,endIndex);
 
 		commandArray[commandCount] = command;
@@ -94,7 +92,15 @@ bool RaSQL_Parser::parse(string cmd_str)
 	if(i>1)
 	{
 		// use -2 for file input and -1 for manual input
-		commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 2) );
+		if( commandArray[i-1][commandArray[i-1].length()-1] == int(13) )
+		{
+			commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 2) );
+		}
+		else
+		{
+			commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 1) );
+		}
+			
 	}
 	
 	
@@ -112,12 +118,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 			}
 		}
 
-		
-		//commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 1) );
 	}
-
-
-
 
 	return true;
 }

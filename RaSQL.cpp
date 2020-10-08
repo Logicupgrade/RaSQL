@@ -30,8 +30,12 @@ int main(int argc, char** argv)
 
     while(isGood)
     {
-        //cout<<">>";
+        cout<<">>";
         getline(cin,DBCommand);
+
+        //debug - repeats input command
+        cout<<DBCommand<<endl;
+
         //cout<<endl;
 
         the_manager.manage_cmd(DBCommand, current_DB);

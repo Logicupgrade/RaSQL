@@ -51,7 +51,8 @@
 				if(the_parser.commandArray[i] != "")
 				{
 					//debugging
-					// cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+					//cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+					
 					command_count++;
 				}
 
@@ -302,7 +303,7 @@
 			}
 			else
 			{
-				//cout<<"Please enter correct Command"<<endl;
+				cout<<"Please enter correct Command"<<endl;
 				
 			}
 
