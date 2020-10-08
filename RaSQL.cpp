@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <string>
-
-//#include "RaSQL_Parser.cpp"
+//debug parser
+// #include "RaSQL_Parser.cpp"
 #include "RaSQL_DB_Manager.cpp"
 
 using namespace std;
@@ -26,19 +26,27 @@ int main(int argc, char** argv)
     bool                isGood = true;
     RaSQL_DB_Manager    the_manager;
 
+    //debug parser
+    RaSQL_Parser        the_parser;
+
     //cout<<"Welcome to RaSQL Database Manager"<<endl;
 
     while(isGood)
     {
         cout<<">>";
-        getline(cin,DBCommand);
+        getline(cin,DBCommand, ';');
 
         //debug - repeats input command
         cout<<DBCommand<<endl;
+        
+        //debug parser
+        the_parser.parse(DBCommand);
+
+        
 
         //cout<<endl;
 
-        the_manager.manage_cmd(DBCommand, current_DB);
+        //the_manager.manage_cmd(DBCommand, current_DB);
         
         //Exit Conditions
         if(cin.eof() || (the_manager.get_status() == -1) )

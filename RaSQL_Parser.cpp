@@ -27,13 +27,44 @@ string RaSQL_Parser::strToLower(int strLength, string theString)
 
 bool RaSQL_Parser::parse(string cmd_str)
 {
+	int frontIndex = 0;
+	int endIndex;
+
 	clear();
 
+	//****TODO: flag for ending with comment
+	// parses '--','CR' = 13,'NL' = 10
+	while( (cmd_str[0] == '-' && cmd_str[1] == '-') || (cmd_str[0] == int(13)) || cmd_str[0] == int(10) )
+	{
+		cout<<"cmd[0]: "<<int(cmd_str[0])<<endl;
+		cout<<"cmd: "<<cmd_str<<endl;
+
+		frontIndex = 0;
+
+		if(cmd_str[0] == '-' && cmd_str[1] == '-')
+		{
+			frontIndex = cmd_str.find( int(13) ) + 1;	
+		}
+		else if(cmd_str[0] == int(10) || cmd_str[0] == int(13))
+		{
+			frontIndex = frontIndex + 1;
+		}
+		
+		cmd_str = cmd_str.substr(frontIndex, -1);
+		
+	}
+
+	//debug
+	// cout<<"final cmd: "<<cmd_str<<endl;
+	
+	//At this point should be only command without ';'
+
+	////////OLD Parser____________________________________________________
 	bool isLastCmd = false;
 	
 	int endCmdStr = cmd_str.length();//-1;
-	int frontIndex = 0;
-	int endIndex;
+	
+	
 	int commandCount = 0;
 
 	string command;
@@ -65,6 +96,11 @@ bool RaSQL_Parser::parse(string cmd_str)
 			{
 				endIndex = ( endCmdStr - frontIndex-1);
 			}
+			// else
+			// {
+			// 	endIndex = leftOverStr.find(";")+1;
+			// }
+			
 			
 			isLastCmd = true;
 		}
