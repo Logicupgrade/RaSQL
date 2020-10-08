@@ -51,7 +51,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 		endIndex = leftOverStr.find(" ");
 
-		//checks for last command and executes parse tasks
+		//checks for last command
 		if( endIndex == -1 )
 		{
 			//wonky but excludes ".exit" and "--" from removing ";"
@@ -89,6 +89,8 @@ bool RaSQL_Parser::parse(string cmd_str)
 		i++;
 	}
 
+	//Exit Parsing
+	//**assumption: ".exit" is the only single command
 	if(i>1)
 	{
 		// use -2 for file input and -1 for manual input
@@ -103,7 +105,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 			
 	}
 	
-	
+	//Create Table Parsing
 	if(commandArray[0] == "create" && commandArray[1] == "table")
 	{
 		//remove "(" from first property of schema

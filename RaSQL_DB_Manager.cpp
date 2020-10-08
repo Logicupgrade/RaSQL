@@ -51,8 +51,8 @@
 				if(the_parser.commandArray[i] != "")
 				{
 					//debugging
-					//cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
-					
+					cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+
 					command_count++;
 				}
 
@@ -295,6 +295,10 @@
 				}
 				
 			}
+			else if(the_parser.commandArray[0] == "insert")
+			{
+				//cout<<"insert"<<endl;
+			}
 			else if(the_parser.commandArray[0] == ".exit")
 			{
 				//exit status
@@ -320,7 +324,8 @@
 				else if (error_code == 2){error_string = "drop";}
 				else if (error_code == 3){error_string = "use";}
 				else if (error_code == 4){error_string = "select";}
-				else if (error_code == 5){error_string = "Alter";}
+				else if (error_code == 5){error_string = "alter";}
+				else if (error_code == 6){error_string = "insert";}
 				
 				//debug
 				//cout<<"****Error with '"<<error_string<<"' command****"<<endl;
