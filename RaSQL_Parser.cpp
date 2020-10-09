@@ -27,119 +27,82 @@ string RaSQL_Parser::strToLower(int strLength, string theString)
 
 bool RaSQL_Parser::parse(string cmd_str)
 {
-	int frontIndex = 0;
+	int frontIndex = 1;
 	int endIndex;
 
-	clear();
-
-	//****TODO: flag for ending with comment
-	// parses '--','CR' = 13,'NL' = 10
-	while( (cmd_str[0] == '-' && cmd_str[1] == '-') || (cmd_str[0] == int(13)) || cmd_str[0] == int(10) )
-	{
-		cout<<"cmd[0]: "<<int(cmd_str[0])<<endl;
-		cout<<"cmd: "<<cmd_str<<endl;
-
-		frontIndex = 0;
-
-		if(cmd_str[0] == '-' && cmd_str[1] == '-')
-		{
-			frontIndex = cmd_str.find( int(13) ) + 1;	
-		}
-		else if(cmd_str[0] == int(10) || cmd_str[0] == int(13))
-		{
-			frontIndex = frontIndex + 1;
-		}
-		
-		cmd_str = cmd_str.substr(frontIndex, -1);
-		
-	}
-
-	//debug
-	// cout<<"final cmd: "<<cmd_str<<endl;
-	
-	//At this point should be only command without ';'
-
-	////////OLD Parser____________________________________________________
 	bool isLastCmd = false;
-	
-	int endCmdStr = cmd_str.length();//-1;
-	
-	
-	int commandCount = 0;
-
+	int endCmdStr = cmd_str.length();
 	string command;
 	string leftOverStr;
 
 	cmd_str = strToLower(cmd_str.length(),cmd_str);
-
 	
+	clear();
+
+	//parse out comments
+	if( (cmd_str[0] == '-' && cmd_str[1] == '-') || (cmd_str[1] == '-' && cmd_str[2] == '-') )
+	{
+		return true;
+	}
+	//parse out nulls and new line chars
+	else if(cmd_str[1] == '\0' || cmd_str[1] == '\n')
+	{
+		return true;
+	}
+	//parse out .exit
+	else if(cmd_str.substr(1,6) == ".exit")
+	{
+		commandArray[0] = ".exit";
+		return true;
+	}
 
 	while(!isLastCmd)
 	{
-		
 		leftOverStr = cmd_str;
 		leftOverStr = leftOverStr.substr(frontIndex,endCmdStr);
 
-		endIndex = leftOverStr.find(" ");
+	 	endIndex = leftOverStr.find(" ");
 
-		//checks for last command
+	// 	//checks for last command
 		if( endIndex == -1 )
 		{
-			//wonky but excludes ".exit" and "--" from removing ";"
-			if(leftOverStr.substr(0,endCmdStr - frontIndex) == ".exit" ||
-				( commandArray[0][0] == '-' && commandArray[0][1] == '-' ) )
-			{
-				endIndex = ( endCmdStr - frontIndex);
-			}
-			//takes into account carriage return char from file input
-			else if(leftOverStr.substr(0,endCmdStr - frontIndex-1) == ".exit" )
-			{
-				endIndex = ( endCmdStr - frontIndex-1);
-			}
-			// else
-			// {
-			// 	endIndex = leftOverStr.find(";")+1;
-			// }
-			
-			
 			isLastCmd = true;
 		}
 
-		//**-1 as endIndex will return entire string
+	// 	//**-1 as endIndex will return entire string
 		command = leftOverStr.substr(0,endIndex);
 
 		commandArray[commandCount] = command;
 
+		//cout<< "commandArray last: "<<leftOverStr[endIndex]<<endl;
+		if(command[command.length() - 1] == ';')//commandArray[commandCount][commandArray[commandCount].length()-1] == ';')
+		{
+			//remove ';'
+			commandArray[commandCount] = command.substr(0,command.length() - 1);
+			cout<<"command: "<<command<<endl;
+
+			//reset 
+			commandCount = 0;
+		}
+		else
+		{
+			commandCount++;
+		}
+
+
 		frontIndex += endIndex+1;
-		
-		commandCount++;
-		
+
+		//cout<<"commandArray["<<commandCount<<"]: "<<command<<"(length: "<<command.length()<<endl;
 	}
 	
 	//final parsing touch-ups:
 
-	//i gets last command index+1
-	int i=0;
-	while(commandArray[i] != "" || i>19)
+	//makes sure multiline cmds don't skip count
+	if(commandCount > 0)
 	{
-		i++;
+		commandCount--;
 	}
-
-	//Exit Parsing
-	//**assumption: ".exit" is the only single command
-	if(i>1)
-	{
-		// use -2 for file input and -1 for manual input
-		if( commandArray[i-1][commandArray[i-1].length()-1] == int(13) )
-		{
-			commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 2) );
-		}
-		else
-		{
-			commandArray[i-1] = commandArray[i-1].substr( 0, (commandArray[i-1].length() - 1) );
-		}
-			
-	}
+	
 	
 	//Create Table Parsing
 	if(commandArray[0] == "create" && commandArray[1] == "table")
@@ -163,7 +126,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 void RaSQL_Parser::clear()
 {
-	for(int i = 0;i<10;i++)
+	for(int i = 0;i<20;i++)
 	{
 		commandArray[i] = "";
 	}

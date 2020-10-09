@@ -10,6 +10,7 @@ class RaSQL_Parser
 
 	public:
 		int commandArraySize = 20;
+		int commandCount = 0;
 
 		string commandArray[20];
 		string 	DB_name = ".RaSQL";

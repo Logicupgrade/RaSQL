@@ -34,13 +34,32 @@ int main(int argc, char** argv)
     while(isGood)
     {
         cout<<">>";
-        getline(cin,DBCommand, ';');
+        getline(cin,DBCommand, '\r' );
 
         //debug - repeats input command
         cout<<DBCommand<<endl;
         
         //debug parser
+
+
         the_parser.parse(DBCommand);
+
+        cout<<"||"<<endl;
+
+        if(the_parser.commandArray[0] == ".exit")
+        {
+            isGood = false;
+        }
+
+        for(int i =0;i<20;i++)
+        {
+            if(the_parser.commandArray[i] != "")
+            {
+                //debugging
+                cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+            }
+
+        }
 
         
 

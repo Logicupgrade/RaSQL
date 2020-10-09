@@ -42,6 +42,7 @@
 
 			//parse
 			RaSQL_Parser the_parser;
+			
 			the_parser.parse(commandStr);
 
 			int command_count = 0;
