@@ -29,9 +29,8 @@ bool RaSQL_Parser::parse(string cmd_str)
 {
 	int frontIndex = 1;
 	int endIndex;
-
-	bool isLastCmd = false;
 	int endCmdStr = cmd_str.length();
+	bool isLastCmd = false;
 	string command;
 	string leftOverStr;
 
@@ -74,12 +73,10 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 		commandArray[commandCount] = command;
 
-		//cout<< "commandArray last: "<<leftOverStr[endIndex]<<endl;
-		if(command[command.length() - 1] == ';')//commandArray[commandCount][commandArray[commandCount].length()-1] == ';')
+		if(command[command.length() - 1] == ';')
 		{
 			//remove ';'
 			commandArray[commandCount] = command.substr(0,command.length() - 1);
-			cout<<"command: "<<command<<endl;
 
 			//reset 
 			commandCount = 0;
@@ -89,10 +86,7 @@ bool RaSQL_Parser::parse(string cmd_str)
 			commandCount++;
 		}
 
-
 		frontIndex += endIndex+1;
-
-		//cout<<"commandArray["<<commandCount<<"]: "<<command<<"(length: "<<command.length()<<endl;
 	}
 	
 	//final parsing touch-ups:
