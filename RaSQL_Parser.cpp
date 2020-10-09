@@ -48,13 +48,52 @@ bool RaSQL_Parser::parse(string cmd_str)
 	{
 		return true;
 	}
-	//parse out .exit
+	//parse out '.exit'
 	else if(cmd_str.substr(1,6) == ".exit")
 	{
 		commandArray[0] = ".exit";
 		return true;
 	}
+	//parse out 'insert into'
+	
+	else if(cmd_str.substr(1,11) == "insert into")
+	{
+		int tempBegin = cmd_str.find(" ",10);
+		int tempEnd = cmd_str.find(" ",13);
+		int strEnd;
+		string tempString;
 
+		commandArray[0] = "insert";
+		commandArray[1] = "into";
+		commandArray[2] = cmd_str.substr(tempBegin + 1,tempEnd-tempBegin);
+		commandArray[3] = "values";
+
+		tempBegin = cmd_str.find("(");
+		strEnd = cmd_str.find(")");
+		tempString = cmd_str.substr(tempBegin + 1,strEnd-tempBegin);
+
+		tempBegin = 0;
+		
+		
+			tempEnd = tempString.find(",");
+			commandArray[4] = tempString.substr(tempBegin,tempEnd-tempBegin);
+			
+			tempBegin = tempEnd;
+			tempString = tempString.substr(tempBegin,-1);
+			tempEnd = tempString.find(",",2);
+			commandArray[5] = tempString.substr(2,tempEnd - 2);
+
+			tempBegin = tempString.find("\t",3);
+			tempEnd =  tempString.find(")");
+			commandArray[6] = tempString.substr(tempBegin + 1,tempEnd-tempBegin-1);
+			
+			// tempBegin = tempEnd-tempBegin;
+			// tempString = tempString.substr(tempBegin,-1);
+			// commandArray[6] = tempString;
+
+		return true;
+	}
+	
 	while(!isLastCmd)
 	{
 		leftOverStr = cmd_str;
@@ -62,13 +101,13 @@ bool RaSQL_Parser::parse(string cmd_str)
 
 	 	endIndex = leftOverStr.find(" ");
 
-	// 	//checks for last command
+		//checks for last command
 		if( endIndex == -1 )
 		{
 			isLastCmd = true;
 		}
 
-	// 	//**-1 as endIndex will return entire string
+		//**-1 as endIndex will return entire string
 		command = leftOverStr.substr(0,endIndex);
 
 		commandArray[commandCount] = command;
