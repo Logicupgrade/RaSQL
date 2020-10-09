@@ -43,7 +43,7 @@
 			//parse
 			RaSQL_Parser the_parser;
 			
-			the_parser.parse(commandStr);
+			the_parser.parseInput(commandStr);
 
 			int command_count = 0;
 			
@@ -308,8 +308,20 @@
 			}
 			else
 			{
-				cout<<"Please enter correct Command"<<endl;
-				
+				if( the_parser.commandArray[0] == " " || 
+					the_parser.commandArray[0] == "\n" || 
+					the_parser.commandArray[0] == "\t" ||
+					the_parser.commandArray[0] == "" )
+				{
+					//do nothing
+					cout<<endl;
+				}
+				else
+				{
+
+					cout<<"Please enter correct Command|"<<int(the_parser.commandArray[0][0])<<endl;
+				}
+					
 			}
 
 			//error code (0=Good,1)

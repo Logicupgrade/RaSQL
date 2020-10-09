@@ -37,35 +37,35 @@ int main(int argc, char** argv)
         getline(cin,DBCommand, '\r' );
 
         //debug - repeats input command
-        cout<<DBCommand<<endl;
+        //cout<<DBCommand<<endl;
         
         //debug parser
 
 
-        the_parser.parse(DBCommand);
+        // the_parser.parseInput(DBCommand);
 
-        cout<<"||"<<endl;
+        // cout<<"||"<<endl;
 
-        if(the_parser.commandArray[0] == ".exit")
-        {
-            isGood = false;
-        }
+        // if(the_parser.commandArray[0] == ".exit")
+        // {
+        //     isGood = false;
+        // }
 
-        for(int i =0;i<20;i++)
-        {
-            if(the_parser.commandArray[i] != "")
-            {
-                //debugging
-                cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
-            }
+        // for(int i =0;i<20;i++)
+        // {
+        //     if(the_parser.commandArray[i] != "")
+        //     {
+        //         //debugging
+        //         cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+        //     }
 
-        }
+        // }
 
         
 
         //cout<<endl;
 
-        //the_manager.manage_cmd(DBCommand, current_DB);
+        the_manager.manage_cmd(DBCommand, current_DB);
         
         //Exit Conditions
         if(cin.eof() || (the_manager.get_status() == -1) )

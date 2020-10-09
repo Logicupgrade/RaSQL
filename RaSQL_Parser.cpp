@@ -25,7 +25,7 @@ string RaSQL_Parser::strToLower(int strLength, string theString)
     return theString;
 }
 
-bool RaSQL_Parser::parse(string cmd_str)
+bool RaSQL_Parser::parseInput(string cmd_str)
 {
 	int frontIndex = 1;
 	int endIndex;
@@ -43,19 +43,21 @@ bool RaSQL_Parser::parse(string cmd_str)
 	{
 		return true;
 	}
+	
 	//parse out nulls and new line chars
 	else if(cmd_str[1] == '\0' || cmd_str[1] == '\n')
 	{
 		return true;
 	}
+	
 	//parse out '.exit'
 	else if(cmd_str.substr(1,6) == ".exit")
 	{
 		commandArray[0] = ".exit";
 		return true;
 	}
+
 	//parse out 'insert into'
-	
 	else if(cmd_str.substr(1,11) == "insert into")
 	{
 		int tempBegin = cmd_str.find(" ",10);

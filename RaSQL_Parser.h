@@ -19,6 +19,6 @@ class RaSQL_Parser
 
 		RaSQL_Parser();
 		string strToLower(int strLength, string theString);
-		bool parse(string RaSQL_command_string);
+		bool parseInput(string RaSQL_command_string);
 		void clear();
 };
