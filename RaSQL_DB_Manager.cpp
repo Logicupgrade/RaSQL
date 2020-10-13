@@ -126,6 +126,9 @@
 						
 						table_create_stream.close();
 						cout<<"Table '"<<the_parser.commandArray[2]<<"\' created."<<endl;
+
+
+						//***TODO: add table to database obj
 					}
 
 					//print attributes

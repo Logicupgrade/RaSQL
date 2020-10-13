@@ -12,5 +12,5 @@ class RaSQL_DB
 		int table_count;
 
 	public:
-		RaSQL_DB();
+		RaSQL_DB(string name);
 };
