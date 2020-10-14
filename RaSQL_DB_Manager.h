@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "RaSQL_Parser.cpp"
+#include "RaSQL_Table.cpp"
 
 using namespace std;
 

@@ -240,9 +240,13 @@
 				{
 					string temp_str = "";
 					
-					getline(table_stream,temp_str);
+					while( !table_stream.eof() )
+					{
+						getline(table_stream,temp_str);
 
-					cout<<temp_str<<endl;
+						cout<<temp_str<<endl;
+					}
+	
 				}
 				else
 				{
@@ -277,6 +281,27 @@
 			else if(the_parser.commandArray[0] == "insert")
 			{
 				//cout<<"insert"<<endl;
+				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
+				ofstream table_stream;
+				table_stream.open(table_filename,ios::app);
+
+				if( table_stream.good() == 1 )
+				{
+					table_stream <<'\n';
+					for(int i=4;i<command_count;i++)
+					{
+						table_stream << the_parser.commandArray[i] << ' ';
+
+						if(i>3 && i<(command_count-1) )
+						{
+							table_stream<<"| ";
+						}
+					}
+				}
+			}
+			else if(the_parser.commandArray[0] == "update")
+			{
+				RaSQL_Table theTable(the_parser.commandArray[1], current_database);
 			}
 			else if(the_parser.commandArray[0] == ".exit")
 			{

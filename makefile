@@ -4,10 +4,10 @@ CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG) 
 
 #******* RaSQL Driver************************
-RaSQL : RaSQL.o RaSQL_Parser.o RaSQL_DB_Manager.o #RaSQL_User.o RaSQL_DB.o RaSQL_Table.o
+RaSQL : RaSQL.o RaSQL_Parser.o RaSQL_DB_Manager.o RaSQL_Table.o #RaSQL_User.o RaSQL_DB.o 
 	$(CC) $(LFLAGS)  RaSQL.o -o RaSQL
 
-RaSQL.o : RaSQL.cpp RaSQL_Parser.cpp RaSQL_DB_Manager.cpp # RaSQL_User.cpp RaSQL_DB.cpp RaSQL_Table.cpp
+RaSQL.o : RaSQL.cpp RaSQL_Parser.cpp RaSQL_DB_Manager.cpp RaSQL_Table.cpp # RaSQL_User.cpp RaSQL_DB.cpp 
 	$(CC) $(CFLAGS)  RaSQL.cpp
 
 # **********************************************************
@@ -18,8 +18,8 @@ RaSQL.o : RaSQL.cpp RaSQL_Parser.cpp RaSQL_DB_Manager.cpp # RaSQL_User.cpp RaSQL
 # RaSQL_DB.o : RaSQL_DB.cpp RaSQL_Table.cpp
 # 	$(CC) $(CFLAGS)  RaSQL_DB.cpp
 
-# RaSQL_Table.o : RaSQL_Table.cpp
-# 	$(CC) $(CFLAGS)  RaSQL_Table.cpp
+RaSQL_Table.o : RaSQL_Table.cpp
+	$(CC) $(CFLAGS)  RaSQL_Table.cpp
 
 RaSQL_DB_Manager.o : RaSQL_DB_Manager.cpp RaSQL_Parser.cpp
 	$(CC) $(CFLAGS)  RaSQL_DB_Manager.cpp
