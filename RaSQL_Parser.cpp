@@ -27,9 +27,10 @@ string RaSQL_Parser::strToLower(int strLength, string theString)
 
 bool RaSQL_Parser::parseInput(string cmd_str)
 {
-	int frontIndex = 1;
+	int frontIndex = 0;
 	int endIndex;
 	int endCmdStr = cmd_str.length();
+	bool clearEmpty = false;
 	bool isLastCmd = false;
 	string command;
 	string leftOverStr;
@@ -38,30 +39,44 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	
 	clear();
 
-	//parse out comments
-	if( (cmd_str[0] == '-' && cmd_str[1] == '-') || (cmd_str[1] == '-' && cmd_str[2] == '-') )
-	{
-		return true;
-	}
 	
-	//parse out nulls and new line chars
-	else if(cmd_str[1] == '\0' || cmd_str[1] == '\n')
+	
+	while(!clearEmpty)
 	{
-		return true;
+		//parse out comments
+		if( (cmd_str[frontIndex] == '-') && (cmd_str[frontIndex+1] == '-') )
+		{
+			int i = 0;
+			while(cmd_str[i]!= '\r')
+			{
+				i++;
+			}
+			i++;
+			frontIndex = i;	
+		}
+		//parse out nulls and new line chars and carriage returns
+		else if(cmd_str[frontIndex] == '\0' || cmd_str[frontIndex] == '\n' || cmd_str[frontIndex] == '\r')
+		{
+			frontIndex++;
+		}
+		else
+		{
+			clearEmpty = true;	
+		}
 	}
 	
 	//parse out '.exit'
-	else if(cmd_str.substr(1,6) == ".exit")
+	if(int(cmd_str.find(".exit"))>-1)
 	{
 		commandArray[0] = ".exit";
 		return true;
 	}
 
 	//parse out 'insert into'
-	else if(cmd_str.substr(1,11) == "insert into")
+	else if(int(cmd_str.find("insert into")) > -1 )
 	{
-		int tempBegin = cmd_str.find(" ",10);
-		int tempEnd = cmd_str.find(" ",13);
+		int tempBegin = cmd_str.find("into")+4;
+		int tempEnd = cmd_str.find("values")-2;
 		int strEnd;
 		string tempString;
 
@@ -76,22 +91,21 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 
 		tempBegin = 0;
 		
+		tempEnd = tempString.find(",");
+		commandArray[4] = tempString.substr(tempBegin,tempEnd-tempBegin);
 		
-			tempEnd = tempString.find(",");
-			commandArray[4] = tempString.substr(tempBegin,tempEnd-tempBegin);
-			
-			tempBegin = tempEnd;
-			tempString = tempString.substr(tempBegin,-1);
-			tempEnd = tempString.find(",",2);
-			commandArray[5] = tempString.substr(2,tempEnd - 2);
+		tempBegin = tempEnd;
+		tempString = tempString.substr(tempBegin,-1);
+		tempEnd = tempString.find(",",2);
+		commandArray[5] = tempString.substr(2,tempEnd - 2);
 
-			tempBegin = tempString.find("\t",3);
-			tempEnd =  tempString.find(")");
-			commandArray[6] = tempString.substr(tempBegin + 1,tempEnd-tempBegin-1);
-			
-			// tempBegin = tempEnd-tempBegin;
-			// tempString = tempString.substr(tempBegin,-1);
-			// commandArray[6] = tempString;
+		tempBegin = tempString.find("\t",3);
+		tempEnd =  tempString.find(")");
+		commandArray[6] = tempString.substr(tempBegin + 1,tempEnd-tempBegin-1);
+		
+		// tempBegin = tempEnd-tempBegin;
+		// tempString = tempString.substr(tempBegin,-1);
+		// commandArray[6] = tempString;
 
 		return true;
 	}
@@ -111,6 +125,18 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 
 		//**-1 as endIndex will return entire string
 		command = leftOverStr.substr(0,endIndex);
+
+		
+		//another space check
+		if(command[0] == ' ')
+		{
+			command = command.substr(2,command.length());
+		}
+		if(command[0] == int(13))
+		{
+			command = command.substr(2,command.length());
+		}
+		
 
 		commandArray[commandCount] = command;
 
@@ -133,10 +159,10 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	//final parsing touch-ups:
 
 	//makes sure multiline cmds don't skip count
-	if(commandCount > 0)
-	{
-		commandCount--;
-	}
+	// if(commandCount > 0)
+	// {
+	// 	commandCount--;
+	// }
 	
 	
 	//Create Table Parsing

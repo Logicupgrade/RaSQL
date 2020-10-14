@@ -1,1 +1,1 @@
-pid,int,name,varchar(20),price,float,
+pid int | name varchar(20) | price float 

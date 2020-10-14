@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     while(isGood)
     {
         cout<<">>";
-        getline(cin,DBCommand, '\r' );
+        getline(cin,DBCommand, ';' );
 
         //debug - repeats input command
         //cout<<DBCommand<<endl;

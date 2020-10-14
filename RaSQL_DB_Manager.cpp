@@ -121,7 +121,12 @@
 
 						for(int i=3;i<command_count;i++)
 						{
-							table_create_stream << the_parser.commandArray[i] << ',';
+							table_create_stream << the_parser.commandArray[i] << ' ';
+
+							if(i%2 == 0 && i<(command_count-1) )
+							{
+								table_create_stream<<"| ";
+							}
 						}
 						
 						table_create_stream.close();
@@ -225,58 +230,28 @@
 			//Select Command
 			else if(the_parser.commandArray[0] == "select")
 			{
-				//cout<<"select"<<endl;
-
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[3] + ".txt";
 
 				ifstream table_stream;
 				table_stream.open(table_filename);
 
-				//table exists..will grab content
+				//table exists..will grab content and print to terminal output
 				if( table_stream.good() == 1 )
 				{
 					string temp_str = "";
-					string attributes[20];
-					int attribute_count = 0;
-
-					// save for transition to table object
-					// vector<string> table_2D[20];
 					
 					getline(table_stream,temp_str);
 
-					stringstream string_line(temp_str);
-
-					while( getline(string_line,attributes[attribute_count],',') )
-					{
-						// cout<<"["<<attribute_count<<"]: "<<attributes[attribute_count]<<endl;
-						attribute_count++;
-					}
-
-					//print attributes
-					for(int i = 0; i<attribute_count;i++)
-					{
-						cout<<attributes[i]<<" ";
-						if(i%2 == 1 && (i<attribute_count-1) )
-						{
-							cout<<"| ";
-						}
-					}
-					cout<<endl;
-					
-					
+					cout<<temp_str<<endl;
 				}
 				else
 				{
 					error_code = 4;
 					cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
 				}
-				
-
-
 			}
 			else if(the_parser.commandArray[0] == "alter")
 			{
-				//cout<<"alter"<<endl;
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
 				ofstream table_stream;
 				table_stream.open(table_filename,ios::app);
@@ -287,7 +262,7 @@
 					//if alter command is add
 					if( the_parser.commandArray[3] == "add" )
 					{
-						table_stream<<the_parser.commandArray[4]<<","<<the_parser.commandArray[5]<<",";
+						table_stream<<"| "<<the_parser.commandArray[4]<<' '<<the_parser.commandArray[5];
 						cout<<"Table '"<<the_parser.commandArray[2]<<"\' modified."<<endl;
 					}
 				}

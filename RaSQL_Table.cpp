@@ -2,8 +2,12 @@
 
 #include "RaSQL_Table.h"
 
-RaSQL_Table::RaSQL_Table()
-{}
+RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
+{
+	//create filename from inputs
+	//grab schema
+	//loop through and make array of nodes
+}
 
 bool RaSQL_Table::set_table_name()
 {
