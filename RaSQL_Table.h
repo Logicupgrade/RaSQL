@@ -12,6 +12,7 @@ class RaSQL_Table
 		int table_entries;
 
 		string table_filename;
+		string schema_input;
 
 		string* table_schema;
 

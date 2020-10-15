@@ -302,6 +302,11 @@
 			else if(the_parser.commandArray[0] == "update")
 			{
 				RaSQL_Table theTable(the_parser.commandArray[1], current_database);
+				//updateTable(skey,sval,wkey,wval)
+				theTable.update_table(the_parser.commandArray[3],
+										the_parser.commandArray[5],
+											the_parser.commandArray[7],
+												the_parser.commandArray[9]);
 
 				//updates the modified record cound
 				modified_record();

@@ -57,14 +57,44 @@ int RaSQL_Table::getSchemaIndex(string possible_attr)
 
 bool RaSQL_Table::update_table_file()
 {
-	//rewrite file
-	return true;
+	//rewrite data after schema
+	ofstream table_stream;
+	table_stream.open(table_filename);
+
+	//if table file found
+	if( table_stream.good() == 1 )
+	{
+		table_stream<<schema_input<<endl;
+
+		for(int i=0;i<table_entries;i++)
+		{
+			for(int j=0;j<schema_attr_count;j++)
+			{
+				table_stream<<current_table[i][j];
+
+				if(j<schema_attr_count-1)
+				{
+					table_stream<<" | ";
+				}
+			}
+
+			if(i<table_entries-1)
+			{
+				table_stream<<endl;
+			}
+		}
+	
+		table_stream.close();
+		return true;
+	}
+	
+	return false;
 }
 
 RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 {
 	//create filename from inputs
-	string table_filename = "RaSQL_tables/" + currentDB +"-"+ table_name + ".txt";
+	table_filename = "RaSQL_tables/" + currentDB +"-"+ table_name + ".txt";
 
 	//read schema from table file
 	ifstream table_stream;
@@ -76,6 +106,9 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 		string tempSchema;
 		//grab schema
 		getline(table_stream,tempSchema);
+
+		//grabbing schema for use in update (not relevant to this flow)
+		schema_input = tempSchema;
 
 		//update schema attr count
 		schema_attr_count = countSchemaAttr(tempSchema);
@@ -125,9 +158,7 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 			}	
 		}
 
-		
-		
-		 
+
 		//Debug*****
 		cout<<"!table schema count: "<<schema_attr_count<<endl;
 		cout<<"!schema array: ";
@@ -151,8 +182,8 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 		cout<<endl;
 		//*****
 	}
-	
-	//loop through and make array of nodes
+
+	table_stream.close();
 }
 
 bool RaSQL_Table::update_table(string set_key, string set_value, 
@@ -179,16 +210,24 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 		return false;
 	}
 
-	for(int i = 0;i<table_entries;i++)
+	int i = 0;
+	while(i<table_entries)
 	{
 		if(current_table[i][w_schema_index] == where_value)
 		{
-			current_table[i][s_schema_index] == set_value;
-			return true;
+			//change value
+			current_table[i][s_schema_index] = set_value;
+
+			//update table file
+			update_table_file();
+			cout<<"y index: "<<i<<endl;
+			cout<<"x index: "<<s_schema_index<<endl;
+			cout<<"value: "<<set_value<<endl;
 		}
+		i++;
 	}
 	
-	return false;
+	return true;
 }
 
 bool RaSQL_Table::set_table_name()
