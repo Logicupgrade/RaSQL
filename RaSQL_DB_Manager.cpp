@@ -31,8 +31,9 @@
 			return true;
 		}
 
-		RaSQL_DB_Manager::RaSQL_DB_Manager()
+		RaSQL_DB_Manager::RaSQL_DB_Manager(bool debugger)
 		{
+			debugMode(debugger);
 		}
 
 		bool RaSQL_DB_Manager::manage_cmd(string commandStr, string& current_database)//string* commands, int command_count)
@@ -51,8 +52,11 @@
 			{
 				if(the_parser.commandArray[i] != "")
 				{
-					//debugging
-					cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+					//debug
+					if(isDebug)
+					{
+						cout<<"Command Array["<<i<<"]:"<<the_parser.commandArray[i]<<endl;
+					}
 
 					command_count++;
 				}
@@ -297,11 +301,15 @@
 							table_stream<<"| ";
 						}
 					}
+
+					cout<<"1 new record inserted."<<endl;
 				}
 			}
 			else if(the_parser.commandArray[0] == "update")
 			{
-				RaSQL_Table theTable(the_parser.commandArray[1], current_database);
+				RaSQL_Table theTable(the_parser.commandArray[1], current_database, isDebug);
+
+
 				//updateTable(skey,sval,wkey,wval)
 				theTable.update_table(the_parser.commandArray[3],
 										the_parser.commandArray[5],
@@ -339,8 +347,10 @@
 				}
 				else
 				{
-
-					cout<<"Please enter correct Command|"<<int(the_parser.commandArray[0][0])<<endl;
+					if(isDebug)
+					{
+						cout<<"Please enter correct Command|"<<int(the_parser.commandArray[0][0])<<endl;
+					}
 				}
 					
 			}
@@ -362,7 +372,11 @@
 				else if (error_code == 6){error_string = "insert";}
 				
 				//debug
-				//cout<<"****Error with '"<<error_string<<"' command****"<<endl;
+				if(isDebug)
+				{
+					cout<<"****Error with '"<<error_string<<"' command****"<<endl;
+				}
+
 				return false;
 			}
 			
@@ -376,4 +390,10 @@
 		void RaSQL_DB_Manager::modified_record()
 		{
 			modifiedRecords++;
+		}
+
+		//prints variables to the terminal output
+		void RaSQL_DB_Manager::debugMode( bool toDeOrNotToDe )
+		{
+			isDebug = toDeOrNotToDe;
 		}

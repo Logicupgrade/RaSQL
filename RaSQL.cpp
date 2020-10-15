@@ -21,10 +21,13 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+    //show variables for debugging
+    bool                showDebug = true;
+
     string              DBCommand;
     string              current_DB;
     bool                isGood = true;
-    RaSQL_DB_Manager    the_manager;
+    RaSQL_DB_Manager    the_manager(showDebug);
 
     //debug parser
     RaSQL_Parser        the_parser;
@@ -33,7 +36,11 @@ int main(int argc, char** argv)
 
     while(isGood)
     {
-        cout<<">>";
+        if(showDebug)
+        {
+            cout<<">>";
+        }
+        
         getline(cin,DBCommand, ';' );
 
         //debug - repeats input command

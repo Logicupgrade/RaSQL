@@ -14,8 +14,12 @@ using namespace std;
 class RaSQL_DB_Manager
 {
 	private:
+		//debug variable
+		bool isDebug = false;
+
 		int status = 0;
 		int modifiedRecords = 0;
+		int deletedRecords = 0;
 
 		string* DB_list;
 		//string currentDB = "";
@@ -28,8 +32,10 @@ class RaSQL_DB_Manager
 		bool delete_DB_file();//find,delete
 
 	public:
-		RaSQL_DB_Manager();
+		RaSQL_DB_Manager(bool debugger);
 		bool manage_cmd(string commandStr, string& current_database);//string* commands, int command_count);
 		int get_status();
 		void modified_record();
+
+		void debugMode( bool toDeOrNotToDe );
 };

@@ -35,12 +35,6 @@ bool RaSQL_Table::makeCurrentTable()
 	return true;
 }
 
-bool RaSQL_Table::fillCurrentTable()
-{
-
-	return true;
-}
-
 int RaSQL_Table::getSchemaIndex(string possible_attr)
 {
 	//get table schema index for where key
@@ -66,24 +60,34 @@ bool RaSQL_Table::update_table_file()
 	{
 		table_stream<<schema_input<<endl;
 
+		//iterate through each entry
 		for(int i=0;i<table_entries;i++)
 		{
-			for(int j=0;j<schema_attr_count;j++)
+			//if empty skip because most likely deleted
+			if(current_table[i][0] != "")
 			{
-				table_stream<<current_table[i][j];
-
-				if(j<schema_attr_count-1)
+				//iterate through each entry's attribute
+				for(int j=0;j<schema_attr_count;j++)
 				{
-					table_stream<<" | ";
+					//print entry attribute to file
+					table_stream<<current_table[i][j];
+
+					//print spacer after entry except last entry
+					if(j<schema_attr_count-1)
+					{
+						table_stream<<" | ";
+					}
 				}
 			}
-
+			
+			//prints newline char after every entry but last
 			if(i<table_entries-1)
 			{
 				table_stream<<endl;
 			}
 		}
 	
+		//close file stream
 		table_stream.close();
 		return true;
 	}
@@ -91,8 +95,11 @@ bool RaSQL_Table::update_table_file()
 	return false;
 }
 
-RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
+RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 {
+	//show variables for debugging or not
+	debugMode( debugger );
+
 	//create filename from inputs
 	table_filename = "RaSQL_tables/" + currentDB +"-"+ table_name + ".txt";
 
@@ -160,26 +167,29 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 
 
 		//Debug*****
-		cout<<"!table schema count: "<<schema_attr_count<<endl;
-		cout<<"!schema array: ";
-		for(int i =0;i<schema_attr_count;i++)
+		if(isDebug)
 		{
-			cout<<"schema["<<i<<"]:"<<table_schema[i]<<endl;
-		}
-		cout<<"!Table entries:"<<table_entries<<endl;
-
-		cout<<"!!!theTABLE:"<<endl;
-		for(int i=0;i<table_entries;i++)
-		{
-			getline(table_stream,tempSchema);
-
-			for(int j=0;j<schema_attr_count;j++)
+			cout<<"!table schema count: "<<schema_attr_count<<endl;
+			cout<<"!schema array: ";
+			for(int i =0;i<schema_attr_count;i++)
 			{
-				cout<<"table ["<<i<<"]["<<j<<"]: "<<current_table[i][j]<<",";
+				cout<<"schema["<<i<<"]:"<<table_schema[i]<<endl;
+			}
+			cout<<"!Table entries:"<<table_entries<<endl;
+
+			cout<<"!!!theTABLE:"<<endl;
+			for(int i=0;i<table_entries;i++)
+			{
+				getline(table_stream,tempSchema);
+
+				for(int j=0;j<schema_attr_count;j++)
+				{
+					cout<<"table ["<<i<<"]["<<j<<"]: "<<current_table[i][j]<<",";
+				}
+				cout<<endl;
 			}
 			cout<<endl;
 		}
-		cout<<endl;
 		//*****
 	}
 
@@ -205,8 +215,11 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 		{
 			possible_attr = set_key;
 		}
-
-		cout<<"update where key: '"<<possible_attr<<"' not found"<<endl;
+		//debug
+		if(isDebug)
+		{
+			cout<<"update where key: '"<<possible_attr<<"' not found"<<endl;
+		}
 		return false;
 	}
 
@@ -220,9 +233,15 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 
 			//update table file
 			update_table_file();
-			cout<<"y index: "<<i<<endl;
-			cout<<"x index: "<<s_schema_index<<endl;
-			cout<<"value: "<<set_value<<endl;
+
+			//debug
+			if(isDebug)
+			{
+				cout<<"y index: "<<i<<endl;
+				cout<<"x index: "<<s_schema_index<<endl;
+				cout<<"value: "<<set_value<<endl;
+			}
+			
 		}
 		i++;
 	}
@@ -246,4 +265,10 @@ bool RaSQL_Table::add_schema_attr()
 bool RaSQL_Table::remove_schema_attr()
 {
 	return true;
+}
+
+//prints variables to the terminal output
+void RaSQL_Table::debugMode( bool toDeOrNotToDe )
+{
+	isDebug = toDeOrNotToDe; 
 }

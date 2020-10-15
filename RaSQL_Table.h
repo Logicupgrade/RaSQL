@@ -8,6 +8,10 @@ using namespace std;
 class RaSQL_Table
 {
 	private:
+
+		//debug variable
+		bool isDebug = false;
+
 		int schema_attr_count;
 		int table_entries;
 
@@ -24,14 +28,13 @@ class RaSQL_Table
 		//helper functions
 		int countSchemaAttr(string schemaLine);
 		bool makeCurrentTable();
-		bool fillCurrentTable();
 		int getSchemaIndex(string possible_attr);
 
 		//file maintenance
 		bool update_table_file();
 
 	public:
-		RaSQL_Table(string table_name, string currentDB);
+		RaSQL_Table(string table_name, string currentDB, bool debugger);
 
 		bool insert(string* values);
 		string* delete_vals(bool expression);
@@ -50,6 +53,8 @@ class RaSQL_Table
 		bool write_schema();
 		bool add_schema_attr();
 		bool remove_schema_attr();
+
+		void debugMode( bool toDeOrNotToDe );
 
 		
 		
