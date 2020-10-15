@@ -49,6 +49,65 @@ int RaSQL_Table::getSchemaIndex(string possible_attr)
 	return -1;
 }
 
+bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expressionStr, string where_value)
+{
+	int w_schema_index = getSchemaIndex(where_key);
+
+	//default to false: nothing will be altered if there is issue
+	bool isTrue = false;
+
+	//keys did not match any attribute
+	if( w_schema_index < 0 )
+	{
+		//debug
+		if(isDebug)
+		{
+			cout<<"where key: '"<<where_key<<"' not found"<<endl;
+		}
+
+		return false;
+	}
+
+	if(expressionStr == "=")
+	{
+		if(check_entry[w_schema_index] == where_value )
+		{
+			isTrue = true;
+		}
+	}
+	else if(expressionStr == "!=")
+	{
+		if(check_entry[w_schema_index] != where_value )
+		{
+			isTrue = true;
+		}
+	}
+	else if(expressionStr == "<")
+	{
+		if(check_entry[w_schema_index] < where_value )
+		{
+			isTrue = true;
+		}
+	}
+	else if(expressionStr == ">")
+	{
+		if(check_entry[w_schema_index] > where_value )
+		{
+			isTrue = true;
+		}
+	}
+	else
+	{
+		if(isDebug)
+		{
+			cout<<"Did not match 'where' expression string"<<endl;
+		}
+	}
+
+	return isTrue;
+	
+}
+
 bool RaSQL_Table::update_table_file()
 {
 	//rewrite data after schema
@@ -195,9 +254,25 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 
 	table_stream.close();
 }
+bool RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)
+{
+	for(int i =0;i<schema_attr_count;i++)
+	{
+		if( whereMatch(current_table[i], where_key, expressionStr, where_value) )
+		{
+			current_table[i][0] = "";
+		}		
+	}
 
+	update_table_file();
+
+	return true;
+}
+
+
+//TODO: Incorporate whereMatch()
 bool RaSQL_Table::update_table(string set_key, string set_value, 
-								string where_key, string where_value)
+								string where_key, string expressionStr, string where_value)
 {
 	int w_schema_index = getSchemaIndex(where_key);
 	int s_schema_index = getSchemaIndex(set_key);
@@ -207,19 +282,26 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 	{
 
 		string possible_attr;
+		string key_type;
+		//could not match where key
 		if(w_schema_index < 0)
 		{
 			possible_attr = where_key;
+			key_type = "where";
 		}
+		//could not match set key
 		else
 		{
 			possible_attr = set_key;
+			key_type = "set";
 		}
+
 		//debug
 		if(isDebug)
 		{
-			cout<<"update where key: '"<<possible_attr<<"' not found"<<endl;
+			cout<<"update "<<key_type<<" key: '"<<possible_attr<<"' not found"<<endl;
 		}
+
 		return false;
 	}
 

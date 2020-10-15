@@ -29,6 +29,7 @@ class RaSQL_Table
 		int countSchemaAttr(string schemaLine);
 		bool makeCurrentTable();
 		int getSchemaIndex(string possible_attr);
+		bool whereMatch(string* check_entry, string where_key, string expressionStr, string where_value);
 
 		//file maintenance
 		bool update_table_file();
@@ -37,9 +38,9 @@ class RaSQL_Table
 		RaSQL_Table(string table_name, string currentDB, bool debugger);
 
 		bool insert(string* values);
-		string* delete_vals(bool expression);
+		bool delete_vals(string where_key, string expressionStr, string where_value);
 		bool update_table(string set_key, string set_value, 
-							string where_key, string where_value);
+							string where_key, string expressionStr, string where_value);
 
 		//can call eachother --"FWGOS"--
 		string* where(bool expression);
