@@ -15,6 +15,7 @@ class RaSQL_DB_Manager
 {
 	private:
 		int status = 0;
+		int modifiedRecords = 0;
 
 		string* DB_list;
 		//string currentDB = "";
@@ -30,4 +31,5 @@ class RaSQL_DB_Manager
 		RaSQL_DB_Manager();
 		bool manage_cmd(string commandStr, string& current_database);//string* commands, int command_count);
 		int get_status();
+		void modified_record();
 };

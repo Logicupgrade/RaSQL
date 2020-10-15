@@ -302,6 +302,19 @@
 			else if(the_parser.commandArray[0] == "update")
 			{
 				RaSQL_Table theTable(the_parser.commandArray[1], current_database);
+
+				//updates the modified record cound
+				modified_record();
+
+				if(modifiedRecords == 1)
+				{
+					cout<<modifiedRecords<<" record modified."<<endl;
+				}
+				else if(modifiedRecords == 0 || modifiedRecords > 1)
+				{
+					cout<<modifiedRecords<<" records modified."<<endl;
+				}
+				
 			}
 			else if(the_parser.commandArray[0] == ".exit")
 			{
@@ -353,4 +366,9 @@
 		int RaSQL_DB_Manager::get_status()
 		{
 			return status;
+		}
+
+		void RaSQL_DB_Manager::modified_record()
+		{
+			modifiedRecords++;
 		}

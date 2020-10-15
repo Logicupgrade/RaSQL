@@ -41,6 +41,26 @@ bool RaSQL_Table::fillCurrentTable()
 	return true;
 }
 
+int RaSQL_Table::getSchemaIndex(string possible_attr)
+{
+	//get table schema index for where key
+	for(int i = 0;i<schema_attr_count;i++)
+	{
+		if(possible_attr == table_schema[i])
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+bool RaSQL_Table::update_table_file()
+{
+	//rewrite file
+	return true;
+}
+
 RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 {
 	//create filename from inputs
@@ -133,6 +153,42 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB)
 	}
 	
 	//loop through and make array of nodes
+}
+
+bool RaSQL_Table::update_table(string set_key, string set_value, 
+								string where_key, string where_value)
+{
+	int w_schema_index = getSchemaIndex(where_key);
+	int s_schema_index = getSchemaIndex(set_key);
+
+	//keys did not match any attribute
+	if( w_schema_index < 0 || s_schema_index < 0)
+	{
+
+		string possible_attr;
+		if(w_schema_index < 0)
+		{
+			possible_attr = where_key;
+		}
+		else
+		{
+			possible_attr = set_key;
+		}
+
+		cout<<"update where key: '"<<possible_attr<<"' not found"<<endl;
+		return false;
+	}
+
+	for(int i = 0;i<table_entries;i++)
+	{
+		if(current_table[i][w_schema_index] == where_value)
+		{
+			current_table[i][s_schema_index] == set_value;
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 bool RaSQL_Table::set_table_name()
