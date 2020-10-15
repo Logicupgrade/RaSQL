@@ -8,19 +8,22 @@ using namespace std;
 class RaSQL_Table
 {
 	private:
-		string table_filename;
-		string* table_schema;
 		int schema_attr_count;
+		int table_entries;
 
-		string** table;
+		string table_filename;
+
+		string* table_schema;
+
+		string** current_table;
 		string** selectTable;//used in select
 		string** whereTable;//used in where
 		string** deleteTable;//used in delete_vals
 
 		//helper functions
 		int countSchemaAttr(string schemaLine);
-		int countTableEntries();
-		bool makeEmptyTable();
+		bool makeCurrentTable();
+		bool fillCurrentTable();
 
 	public:
 		RaSQL_Table(string table_name, string currentDB);
