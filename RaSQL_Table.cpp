@@ -84,14 +84,14 @@ bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expre
 	}
 	else if(expressionStr == "<")
 	{
-		if(check_entry[w_schema_index] < where_value )
+		if(stoi(check_entry[w_schema_index]) < stoi(where_value) )
 		{
 			isTrue = true;
 		}
 	}
 	else if(expressionStr == ">")
 	{
-		if(check_entry[w_schema_index] > where_value )
+		if(stoi(check_entry[w_schema_index]) > stoi(where_value) )
 		{
 			isTrue = true;
 		}
@@ -112,7 +112,7 @@ bool RaSQL_Table::update_table_file()
 {
 	//rewrite data after schema
 	ofstream table_stream;
-	table_stream.open(table_filename);
+	table_stream.open(table_filename, ios::trunc);
 
 	//if table file found
 	if( table_stream.good() == 1 )
@@ -123,7 +123,7 @@ bool RaSQL_Table::update_table_file()
 		for(int i=0;i<table_entries;i++)
 		{
 			//if empty skip because most likely deleted
-			if(current_table[i][0] != "")
+			if(current_table[i][0] != "" )
 			{
 				//iterate through each entry's attribute
 				for(int j=0;j<schema_attr_count;j++)
@@ -137,13 +137,15 @@ bool RaSQL_Table::update_table_file()
 						table_stream<<" | ";
 					}
 				}
+				if(i<table_entries-1)
+				{
+					table_stream<<endl;
+				}
+				
 			}
 			
-			//prints newline char after every entry but last
-			if(i<table_entries-1)
-			{
-				table_stream<<endl;
-			}
+			
+			
 		}
 	
 		//close file stream
@@ -169,7 +171,8 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 	//if table file found
 	if( table_stream.good() == 1 )
 	{
-		string tempSchema;
+		string tempSchema = "";
+
 		//grab schema
 		getline(table_stream,tempSchema);
 
@@ -188,18 +191,20 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 
 			tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
 		}
-
+		
 		//Get number of row entries in table
+		string placholder;
 		table_entries = 0;
 		while(!table_stream.eof())
 		{
-			if(table_stream.get() == '\n')
+			if(getline(table_stream,placholder))
 			{
 				table_entries++;
 			}
 		}
+		
 		//add one more for the last line without a '\n' char
-		table_entries++;
+		//table_entries++;
 
 		//create empty 2D array
 		makeCurrentTable();
@@ -207,11 +212,10 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 		//reset ifstream flags
 		table_stream.clear();
 		//return stream to beginning
-		table_stream.seekg(0);
+		table_stream.seekg(0,ios::beg);
 
 		getline(table_stream,tempSchema);
-
-
+		
 		//fill current table
 		for(int i=0;i<table_entries;i++)
 		{
@@ -219,11 +223,11 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 
 			for(int j=0;j<schema_attr_count;j++)
 			{
+				
 				current_table[i][j] = tempSchema.substr(0,tempSchema.find(" "));
 				tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
 			}	
 		}
-
 
 		//Debug*****
 		if(isDebug)
@@ -254,26 +258,33 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 
 	table_stream.close();
 }
-bool RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)
+int RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)
 {
-	for(int i =0;i<schema_attr_count;i++)
+	int deleteCount = 0;
+
+	//loop through all rows
+	for(int i =0;i<table_entries;i++)
 	{
+		//if where value matches current row attr delete first attribute 
+			//- update_table_file() will then skip entry when updating file
 		if( whereMatch(current_table[i], where_key, expressionStr, where_value) )
 		{
 			current_table[i][0] = "";
+			deleteCount++;
 		}		
 	}
 
 	update_table_file();
 
-	return true;
+	return deleteCount;
 }
 
 
 //TODO: Incorporate whereMatch()
-bool RaSQL_Table::update_table(string set_key, string set_value, 
+int RaSQL_Table::update_table(string set_key, string set_value, 
 								string where_key, string expressionStr, string where_value)
 {
+	int updatedCount = 0;
 	int w_schema_index = getSchemaIndex(where_key);
 	int s_schema_index = getSchemaIndex(set_key);
 
@@ -302,7 +313,7 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 			cout<<"update "<<key_type<<" key: '"<<possible_attr<<"' not found"<<endl;
 		}
 
-		return false;
+		return -1;
 	}
 
 	int i = 0;
@@ -313,8 +324,7 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 			//change value
 			current_table[i][s_schema_index] = set_value;
 
-			//update table file
-			update_table_file();
+			updatedCount++;
 
 			//debug
 			if(isDebug)
@@ -327,8 +337,11 @@ bool RaSQL_Table::update_table(string set_key, string set_value,
 		}
 		i++;
 	}
+
+	//update table file
+	update_table_file();
 	
-	return true;
+	return updatedCount;
 }
 
 bool RaSQL_Table::set_table_name()

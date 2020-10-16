@@ -38,8 +38,8 @@ class RaSQL_Table
 		RaSQL_Table(string table_name, string currentDB, bool debugger);
 
 		bool insert(string* values);
-		bool delete_vals(string where_key, string expressionStr, string where_value);
-		bool update_table(string set_key, string set_value, 
+		int delete_vals(string where_key, string expressionStr, string where_value);
+		int update_table(string set_key, string set_value, 
 							string where_key, string expressionStr, string where_value);
 
 		//can call eachother --"FWGOS"--

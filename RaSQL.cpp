@@ -22,7 +22,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     //show variables for debugging
-    bool                showDebug = true;
+    bool                showDebug = false;
 
     string              DBCommand;
     string              current_DB;

@@ -125,7 +125,12 @@
 
 						for(int i=3;i<command_count;i++)
 						{
-							table_create_stream << the_parser.commandArray[i] << ' ';
+							table_create_stream << the_parser.commandArray[i];
+							
+							if(i<command_count-1)
+							{
+								table_create_stream<< ' ';
+							} 
 
 							if(i%2 == 0 && i<(command_count-1) )
 							{
@@ -311,14 +316,11 @@
 
 
 				//updateTable(skey,sval,wkey,wval)
-				theTable.update_table(the_parser.commandArray[3],
-										the_parser.commandArray[5],
-											the_parser.commandArray[7],
-												the_parser.commandArray[8],
-													the_parser.commandArray[9]);
-
-				//updates the modified record cound
-				modified_record();
+				int modifiedRecords = theTable.update_table(the_parser.commandArray[3],
+																	the_parser.commandArray[5],
+																		the_parser.commandArray[7],
+																			the_parser.commandArray[8],
+																				the_parser.commandArray[9]);
 
 				if(modifiedRecords == 1)
 				{
@@ -328,6 +330,24 @@
 				{
 					cout<<modifiedRecords<<" records modified."<<endl;
 				}
+				
+			}
+			else if(the_parser.commandArray[0] == "delete")
+			{
+				RaSQL_Table theTable(the_parser.commandArray[2], current_database, isDebug);
+
+				//_______delete_vals(string where_key, string expressionStr, string where_value)
+				int deletedRecords = theTable.delete_vals(the_parser.commandArray[4], the_parser.commandArray[5], the_parser.commandArray[6]);
+
+				if(deletedRecords == 1)
+				{
+					cout<<deletedRecords<<" record deleted."<<endl;
+				}
+				else if(deletedRecords == 0 || deletedRecords > 1)
+				{
+					cout<<deletedRecords<<" records deleted."<<endl;
+				}
+
 				
 			}
 			else if(the_parser.commandArray[0] == ".exit")
@@ -386,11 +406,6 @@
 		int RaSQL_DB_Manager::get_status()
 		{
 			return status;
-		}
-
-		void RaSQL_DB_Manager::modified_record()
-		{
-			modifiedRecords++;
 		}
 
 		//prints variables to the terminal output
