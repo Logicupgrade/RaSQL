@@ -1,4 +1,18 @@
 
+/*Manager Class CPP file
+
+Author: Daniel Hayden
+CS457
+
+manages the parser to implement the commands
+and manages the table objects and terminal output
+
+The manager object calls the parser object in order to interpret commands 
+and also the table object for manipulating and updating the table data.
+
+*/
+
+
 // database reference tags '--db_reference'
 // for different file arrangment 
 
@@ -239,6 +253,16 @@
 			//Select Command
 			else if(the_parser.commandArray[0] == "select")
 			{
+				if(the_parser.commandArray[1] != "*")
+				{
+					//needs work
+					// string selectors[2] = {"name","price"};
+					// RaSQL_Table theTable(the_parser.commandArray[5], current_database, isDebug);
+
+					// theTable.where(the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]);
+					// theTable.select( selectors, 2);
+				}
+
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[3] + ".txt";
 
 				ifstream table_stream;
@@ -262,6 +286,8 @@
 					error_code = 4;
 					cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
 				}
+				
+				
 			}
 			else if(the_parser.commandArray[0] == "alter")
 			{

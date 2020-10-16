@@ -1,10 +1,14 @@
 
-//Prompts input
-//Parses Input
-//Manages DB using Parsed Input
-    //Validates Input Command syntax
-        //if Invalid commands provides error message
-    //Executes Valid commands
+/*RaSQL program driver
+
+Author: Daniel Hayden
+CS457
+
+The driver for RaSQL. It mainly just gets the input commands and passes them to the manager.
+As of now this driver is where you can toggle on and off the showDebug option, where if on
+will display variables throughout the program which is useful for debugging.
+
+*/
 
 //**** Notes ****
     //using naming conventions for table files (<DB name>-<Table name>.txt)

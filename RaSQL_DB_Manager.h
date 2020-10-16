@@ -1,4 +1,15 @@
 
+/*Manager Class Header File
+
+Author: Daniel Hayden
+CS457
+
+manages the parser to implement the commands
+and manages the table objects and terminal output
+
+*/
+
+
 #include <string>
 #include <vector>
 #include <iostream>

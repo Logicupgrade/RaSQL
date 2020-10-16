@@ -1,4 +1,13 @@
 
+/*Table Class CPP file
+
+Author: Daniel Hayden
+CS457
+
+This table class parses the table file and implements it into a table object 
+in order for maniputation of data and then updates the table file when done.
+
+*/
 
 #include "RaSQL_Table.h"
 
@@ -37,6 +46,7 @@ bool RaSQL_Table::makeCurrentTable()
 
 int RaSQL_Table::getSchemaIndex(string possible_attr)
 {
+	
 	//get table schema index for where key
 	for(int i = 0;i<schema_attr_count;i++)
 	{
@@ -45,14 +55,14 @@ int RaSQL_Table::getSchemaIndex(string possible_attr)
 			return i;
 		}
 	}
-
+	
 	return -1;
 }
 
 bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expressionStr, string where_value)
 {
 	int w_schema_index = getSchemaIndex(where_key);
-
+	
 	//default to false: nothing will be altered if there is issue
 	bool isTrue = false;
 
@@ -77,6 +87,7 @@ bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expre
 	}
 	else if(expressionStr == "!=")
 	{
+		
 		if(check_entry[w_schema_index] != where_value )
 		{
 			isTrue = true;
@@ -342,6 +353,101 @@ int RaSQL_Table::update_table(string set_key, string set_value,
 	update_table_file();
 	
 	return updatedCount;
+}
+
+bool RaSQL_Table::where(string where_key, string expressionStr, string where_value)
+{
+	where_entries = 0;
+	//create new whereTable 2D array
+	whereTable = new string*[table_entries];
+
+	for(int i=0;i<table_entries;i++)
+	{
+		whereTable[i] = new string[schema_attr_count]; 
+	}
+
+	//loop through all rows
+	for(int i =0;i<table_entries;i++)
+	{
+		
+		//if where value matches current row attr delete first attribute 
+		if( whereMatch(current_table[i], where_key, expressionStr, where_value) ) //seg fault here...
+		{
+			
+			for(int j =0;j<schema_attr_count;j++)
+			{
+				//copy values to where table if matched
+				whereTable[i][j] = current_table[i][j];
+			}
+			
+			//keeping track of where_entrees
+			where_entries++;
+		}
+		else
+		{
+			for(int j =0;j<schema_attr_count;j++)
+			{
+				//initialize other values
+				whereTable[i][j] = "";
+			}
+			
+		}
+
+		
+				
+	}
+
+	return true;
+}
+
+bool RaSQL_Table::select( string* select_vals, int select_val_count )
+{
+	int schemaIndices[select_val_count];
+
+	for(int i=0;i<select_val_count;i++)
+	{
+		schemaIndices[i] = getSchemaIndex(select_vals[i]);
+	}
+
+	
+	//remake currrent_table
+	for(int i=0;i<table_entries;i++)
+	{
+		delete[] current_table[i];
+	}
+
+	delete[] current_table;
+	
+	//make current table of size where_entries X select value count
+	current_table = new string* [where_entries];
+
+	for(int i=0;i<where_entries;i++)
+	{
+		current_table[i] = new string[select_val_count];
+	}
+
+	
+	schema_attr_count = select_val_count;
+	table_entries = where_entries;
+
+	for(int j=0;j<where_entries;j++)
+	{
+		if(whereTable[j][0] != "")
+		{
+			for(int m=0;m<select_val_count;m++)
+			{
+				current_table[j][m]=whereTable[j][schemaIndices[m]];
+			}
+		}
+		
+	}
+	
+
+	update_table_file();
+
+
+	
+	return true;
 }
 
 bool RaSQL_Table::set_table_name()

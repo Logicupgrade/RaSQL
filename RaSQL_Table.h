@@ -1,4 +1,15 @@
 
+/*Table Class Header File
+
+Author: Daniel Hayden
+CS457
+
+This table class parses the table file and implements it into a table object 
+in order for maniputation of data and then updates the table file when done.
+
+*/
+
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -14,6 +25,7 @@ class RaSQL_Table
 
 		int schema_attr_count;
 		int table_entries;
+		int where_entries;
 
 		string table_filename;
 		string schema_input;
@@ -43,8 +55,8 @@ class RaSQL_Table
 							string where_key, string expressionStr, string where_value);
 
 		//can call eachother --"FWGOS"--
-		string* where(bool expression);
-		string* select(string attr);
+		bool where(string where_key, string expressionStr, string where_value);
+		bool select( string* select_vals, int select_val_count );
 
 		bool set_table_name();
 		bool get_table_name();
