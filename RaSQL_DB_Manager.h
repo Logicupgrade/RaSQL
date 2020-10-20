@@ -29,6 +29,7 @@ class RaSQL_DB_Manager
 		bool isDebug = false;
 
 		int status = 0;
+		int command_count = 0;
 
 		string* DB_list;
 		//string currentDB = "";
@@ -37,7 +38,7 @@ class RaSQL_DB_Manager
 		bool load_DB_file();//use currentDB
 		bool use_DB(string DB_name);//find,load
 		bool create_DBO();
-		bool create_DB_file();
+		bool create_DB_file(string db_name);
 		bool delete_DB_file();//find,delete
 
 	public:

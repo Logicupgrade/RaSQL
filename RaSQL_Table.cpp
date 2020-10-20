@@ -200,7 +200,11 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 		{
 			table_schema[i] = tempSchema.substr(0,tempSchema.find(" "));
 
-			tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
+			if( int( tempSchema.find("|") ) > -1)
+			{
+				tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
+			}
+			
 		}
 		
 		//Get number of row entries in table
@@ -236,7 +240,11 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 			{
 				
 				current_table[i][j] = tempSchema.substr(0,tempSchema.find(" "));
-				tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
+
+				if( int( tempSchema.find("|") ) > -1)
+				{
+					tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
+				}
 			}	
 		}
 

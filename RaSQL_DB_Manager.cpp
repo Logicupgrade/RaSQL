@@ -36,10 +36,41 @@ and also the table object for manipulating and updating the table data.
 		{
 			return true;
 		}
-		bool RaSQL_DB_Manager::create_DB_file()
+
+		//creates database file and returns true or doesn't and returns false
+		bool RaSQL_DB_Manager::create_DB_file(string db_name)
 		{
-			return true;
+			bool created_file = false;
+			//initialize filename:"RaSQL_dbs/" + <database> + ".txt"
+					string db_filename = "RaSQL_dbs/" + db_name + ".txt";
+
+					//initialize read file stream
+					ifstream db_stream;
+					db_stream.open(db_filename);
+
+					//database exists.. will not create database
+					if( db_stream.good() )
+					{
+						cout<<"!Failed to create'"<<db_name<<"\' because already exists."<<endl;
+					}
+					
+					//database doesn't exist..create database
+					else
+					{
+						//write database file name
+						ofstream db_create_stream(db_filename);
+						db_create_stream.close();
+
+						created_file = true;
+
+						cout<<"Database '"<<db_name<<"\' created."<<endl;
+					}
+					
+					db_stream.close();
+
+			return created_file;
 		}
+
 		bool RaSQL_DB_Manager::delete_DB_file()//find,delete
 		{
 			return true;
@@ -52,16 +83,22 @@ and also the table object for manipulating and updating the table data.
 
 		bool RaSQL_DB_Manager::manage_cmd(string commandStr, string& current_database)//string* commands, int command_count)
 		{
-
+			//error code initialization
 			int error_code = 0;
 
-			//parse
+			//instantiate parser object
 			RaSQL_Parser the_parser;
 			
+			//parse the input command string
 			the_parser.parseInput(commandStr);
-
-			int command_count = 0;
 			
+			//Iterates through comand array
+				//counts commands in command array -- updates command_count manager property
+				//debug-prints commands to terminal
+			
+			//reset command_count
+			command_count = 0;
+
 			for(int i =0;i<20;i++)
 			{
 				if(the_parser.commandArray[i] != "")
@@ -76,76 +113,51 @@ and also the table object for manipulating and updating the table data.
 				}
 
 			}
-			//validate
-			//execute
 
 			//Create Command
 			if(the_parser.commandArray[0] == "create")
 			{
-				//cout<<"create"<<endl;
-
-				//create database
+				//create database file
 				if(the_parser.commandArray[1] == "database")
 				{
-					string db_filename = "RaSQL_dbs/" + the_parser.commandArray[2] + ".txt";
-
-					ifstream db_stream;
-					db_stream.open(db_filename);
-
-					//database exists.. will not create database
-					if( db_stream.good() )
-					{
-						db_stream.close();
-
-						cout<<"!Failed to create'"<<the_parser.commandArray[2]<<"\' because already exists."<<endl;
-					}
-					
-					//database doesn't exist..create database
-					else
-					{
-						ofstream db_create_stream(db_filename);
-						db_create_stream.close();
-						cout<<"Database '"<<the_parser.commandArray[2]<<"\' created."<<endl;
-					}
-					
-					//cout<<"create file exists?: "<<db_stream.good()<<endl;
+					create_DB_file(the_parser.commandArray[2]);
 				}
 				
 				//create table
 				else if(the_parser.commandArray[1] == "table")
 				{
-															//--db_reference
+					//creates table filename: "RaSQL_tables/" + <current database> +"-"+ <table name> + ".txt"
 					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
-
+					
+					//creates file read stream
 					ifstream table_stream;
 					table_stream.open(table_filename);
 
 					//table exists..will not create table
 					if( table_stream.good() )
 					{
-						table_stream.close();
-
 						cout<<"!Failed to create table '"<<the_parser.commandArray[2]<<"\' because it already exists."<<endl;
 					}
 					
 					//table doesn't exist..create table
 					else
 					{
+						//creates file write stream
 						ofstream table_create_stream;
 						table_create_stream.open(table_filename);
 						
-						//debug
-						//cout<<"command_count: "<<command_count<<endl;
-
+						//loops through commands starting at 3 to command count and writes tables attributes to file
 						for(int i=3;i<command_count;i++)
 						{
 							table_create_stream << the_parser.commandArray[i];
 							
+							//adds space after attr or attr type unless it is the last string in commandArray
 							if(i<command_count-1)
 							{
 								table_create_stream<< ' ';
 							} 
 
+							//adds '|' + space after every second attr string unless its the last string in commandArray
 							if(i%2 == 0 && i<(command_count-1) )
 							{
 								table_create_stream<<"| ";
@@ -153,22 +165,13 @@ and also the table object for manipulating and updating the table data.
 						}
 						
 						table_create_stream.close();
+
 						cout<<"Table '"<<the_parser.commandArray[2]<<"\' created."<<endl;
 
-
-						//***TODO: add table to database obj
+						//***TODO: add table to database obj -> then update file 
 					}
 
-					//print attributes
-					// for(int i = 3; i<command_count;i++)
-					// {
-					// 	cout<<the_parser.commandArray[i]<<" ";
-					// 	if(i%2 == 1 && (i<command_count-1) )
-					// 	{
-					// 		cout<<"| ";
-					// 	}
-					// }
-					// cout<<endl;
+					table_stream.close();
 					
 				}
 			}
@@ -176,12 +179,13 @@ and also the table object for manipulating and updating the table data.
 			//Drop Command
 			else if(the_parser.commandArray[0] == "drop")
 			{
-				//cout<<"drop"<<endl;
-
 				//Drop Database
 				if(the_parser.commandArray[1] == "database")
 				{
+					//creates file name: "RaSQL_dbs/" + <database> + ".txt"
 					string db_filename = "RaSQL_dbs/" + the_parser.commandArray[2] + ".txt";
+
+					//converts db filename to const char*
 					const char* db_filename_cstr = db_filename.c_str();
 
 					ifstream db_stream;
@@ -190,8 +194,6 @@ and also the table object for manipulating and updating the table data.
 					//database exists..drop database
 					if( db_stream.good() )
 					{
-						db_stream.close();
-
 						//removes database and creates error code on fail
 						if(remove(db_filename_cstr) != 0)
 						{
@@ -206,12 +208,14 @@ and also the table object for manipulating and updating the table data.
 					{
 						cout<<"!Failed to delete '"<<the_parser.commandArray[2]<<"\' because it does not exist."<<endl;
 					}
+
+					db_stream.close();
 				}
 
 				//Drop Table
 				else if(the_parser.commandArray[1] == "table")
 				{
-															//--db_reference
+					//creates file name: "RaSQL_tables/" + <current database> + "-" + <table name> + ".txt"
 					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
 					const char* table_filename_cstr = table_filename.c_str();
 
@@ -244,8 +248,7 @@ and also the table object for manipulating and updating the table data.
 			//Use Command
 			else if(the_parser.commandArray[0] == "use")
 			{
-				//cout<<"use"<<endl;
-
+				//set current database to commandArray[1]
 				current_database = the_parser.commandArray[1];
 				cout<<"Using Database '"<<current_database<<"'"<<endl;
 			}
@@ -262,17 +265,20 @@ and also the table object for manipulating and updating the table data.
 					// theTable.where(the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]);
 					// theTable.select( selectors, 2);
 				}
-
+				
+				// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[3] + ".txt";
 
+				//creates read file stream
 				ifstream table_stream;
 				table_stream.open(table_filename);
 
 				//table exists..will grab content and print to terminal output
-				if( table_stream.good() == 1 )
+				if( table_stream.good() )
 				{
 					string temp_str = "";
 					
+					//loops through table file and prints to terminal until end of file
 					while( !table_stream.eof() )
 					{
 						getline(table_stream,temp_str);
@@ -281,6 +287,7 @@ and also the table object for manipulating and updating the table data.
 					}
 	
 				}
+				//did not find table
 				else
 				{
 					error_code = 4;
@@ -291,12 +298,15 @@ and also the table object for manipulating and updating the table data.
 			}
 			else if(the_parser.commandArray[0] == "alter")
 			{
+				//creates filename: "RaSQL_tables/" + <current database> + "-" + <table name> + ".txt"
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
+				
+				//creates a file write stream that appends to the end of the table file
 				ofstream table_stream;
 				table_stream.open(table_filename,ios::app);
 
 				//table is found..proceed with commands
-				if( table_stream.good() == 1 )
+				if( table_stream.good() )
 				{
 					//if alter command is add
 					if( the_parser.commandArray[3] == "add" )
@@ -315,18 +325,30 @@ and also the table object for manipulating and updating the table data.
 			}
 			else if(the_parser.commandArray[0] == "insert")
 			{
-				//cout<<"insert"<<endl;
+				//creates table file name: "RaSQL_tables/" + <current database> + "-" + <table name> + ".txt"
 				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[2] + ".txt";
+
+				//creates file write stream
 				ofstream table_stream;
 				table_stream.open(table_filename,ios::app);
 
-				if( table_stream.good() == 1 )
+				if( table_stream.good() )
 				{
-					table_stream <<'\n';
+					//assuming if table exists it has attributes in it... go to next line
+					table_stream <<endl;
+
+					//loop through commands starting at for to command_count
 					for(int i=4;i<command_count;i++)
 					{
-						table_stream << the_parser.commandArray[i] << ' ';
+						table_stream << the_parser.commandArray[i];
 
+						//adds space after value unless it is the last string in commandArray
+						if(i<command_count-1)
+						{
+							table_stream<< ' ';
+						} 
+
+						//adds '|' + space after value unless it is the last string in commandArray
 						if(i>3 && i<(command_count-1) )
 						{
 							table_stream<<"| ";
@@ -338,16 +360,18 @@ and also the table object for manipulating and updating the table data.
 			}
 			else if(the_parser.commandArray[0] == "update")
 			{
+				//contructs table object with arguments: table name, current database, debug variable(boolean)
 				RaSQL_Table theTable(the_parser.commandArray[1], current_database, isDebug);
 
 
-				//updateTable(skey,sval,wkey,wval)
+				//updating table file with arguments: skey, sval, wkey, boolean expression string, wval
 				int modifiedRecords = theTable.update_table(the_parser.commandArray[3],
 																	the_parser.commandArray[5],
 																		the_parser.commandArray[7],
 																			the_parser.commandArray[8],
 																				the_parser.commandArray[9]);
 
+				//records modified terminal output
 				if(modifiedRecords == 1)
 				{
 					cout<<modifiedRecords<<" record modified."<<endl;
@@ -360,11 +384,13 @@ and also the table object for manipulating and updating the table data.
 			}
 			else if(the_parser.commandArray[0] == "delete")
 			{
+				//contructs table obj with arguments: table name, currrent database, debug variable(boolean)
 				RaSQL_Table theTable(the_parser.commandArray[2], current_database, isDebug);
 
-				//_______delete_vals(string where_key, string expressionStr, string where_value)
+				//calls delete_vals member function with arguments:string where_key, string expressionStr, string where_value
 				int deletedRecords = theTable.delete_vals(the_parser.commandArray[4], the_parser.commandArray[5], the_parser.commandArray[6]);
 
+				//records deleted terminal output
 				if(deletedRecords == 1)
 				{
 					cout<<deletedRecords<<" record deleted."<<endl;
