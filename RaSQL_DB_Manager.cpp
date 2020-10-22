@@ -256,19 +256,41 @@ and also the table object for manipulating and updating the table data.
 			//Select Command
 			else if(the_parser.commandArray[0] == "select")
 			{
-				if(the_parser.commandArray[1] != "*")
+				int table_parse_index;
+				if(the_parser.commandArray[1] == "*")
+				{
+					table_parse_index = 3;
+				}
+				else
 				{
 					//needs work
-					// string selectors[2] = {"name","price"};
-					// RaSQL_Table theTable(the_parser.commandArray[5], current_database, isDebug);
+					int attr_count = 2;
 
-					// theTable.where(the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]);
-					// theTable.select( selectors, 2);
+					//string array
+					string selectors[attr_count] = {"name","price"};
+					//2d array of strings
+					string expressions_vals[3] = {the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]};
+					string* expressions[1] = {expressions_vals};
+
+					//2D string array.. each has 3 depth (ex: 'pid = 5')
+					string expr_part1 = the_parser.commandArray[6];
+					string expr_part2 = the_parser.commandArray[7];
+					string expr_part3 = the_parser.commandArray[8];
+
+					RaSQL_Table theTable(the_parser.commandArray[4], current_database, isDebug);
+
+					theTable.where(expressions,1);
+					theTable.select( selectors, 2);
+
+					// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
+					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[4] + ".txt";
+
+					table_parse_index = 4;
 				}
-				
-				// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
-				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[3] + ".txt";
 
+				// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
+				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[table_parse_index] + ".txt";
+				
 				//creates read file stream
 				ifstream table_stream;
 				table_stream.open(table_filename);

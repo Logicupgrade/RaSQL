@@ -59,6 +59,7 @@ int RaSQL_Table::getSchemaIndex(string possible_attr)
 	return -1;
 }
 
+//passes in a row to compare with expression
 bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expressionStr, string where_value)
 {
 	int w_schema_index = getSchemaIndex(where_key);
@@ -363,49 +364,59 @@ int RaSQL_Table::update_table(string set_key, string set_value,
 	return updatedCount;
 }
 
-bool RaSQL_Table::where(string where_key, string expressionStr, string where_value)
+// bool RaSQL_Table::where(string where_key, string expressionStr, string where_value)
+// {
+
+//return int array of rows that match given constraint(s)
+bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 {
-	where_entries = 0;
-	//create new whereTable 2D array
-	whereTable = new string*[table_entries];
+	//initialize current number of rows = all rows
+	int current_num_rows = table_entries;
+	
+	//initialize int arrray of rows with matching values
+	int matches[current_num_rows];
+	int match_count = 0;
 
-	for(int i=0;i<table_entries;i++)
-	{
-		whereTable[i] = new string[schema_attr_count]; 
-	}
-
-	//loop through all rows
-	for(int i =0;i<table_entries;i++)
+	//loops through all expressions
+	for(int exps=0;exps<expression_count;exps++)
 	{
 		
-		//if where value matches current row attr delete first attribute 
-		if( whereMatch(current_table[i], where_key, expressionStr, where_value) ) //seg fault here...
+		//loops through current num_rows
+		for(int i=0;i<current_num_rows;i++)
 		{
-			
-			for(int j =0;j<schema_attr_count;j++)
+			//if row matches expression 
+			if( whereMatch(current_table[i], expression_2d_array[exps][0], expression_2d_array[exps][1], expression_2d_array[exps][2]) )
 			{
-				//copy values to where table if matched
-				whereTable[i][j] = current_table[i][j];
+				//adds index to matches array
+				matches[match_count] = i;
+
+				//increments matches array index
+				match_count++;
 			}
-			
-			//keeping track of where_entrees
-			where_entries++;
-		}
-		else
-		{
-			for(int j =0;j<schema_attr_count;j++)
+			else
 			{
-				//initialize other values
-				whereTable[i][j] = "";
+				//if row doesnt match we don't need its spot in the matches array
+				current_num_rows--;
 			}
 			
 		}
-
-		
-				
 	}
+
+	//initializes where_matches(table property) to current_num_rows size
+	where_match_count = current_num_rows;
+	where_matches = new int [where_match_count];
+	cout<<"where_match indices: ";
+	for(int j = 0;j<current_num_rows;j++)
+	{
+		where_matches[j] = matches[j];
+
+
+		cout<<matches[j]<<",";
+	}
+	cout<<endl;
 
 	return true;
+
 }
 
 bool RaSQL_Table::select( string* select_vals, int select_val_count )

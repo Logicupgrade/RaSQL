@@ -27,6 +27,9 @@ class RaSQL_Table
 		int table_entries;
 		int where_entries;
 
+		int where_match_count;
+		int* where_matches;
+
 		string table_filename;
 		string schema_input;
 
@@ -55,7 +58,8 @@ class RaSQL_Table
 							string where_key, string expressionStr, string where_value);
 
 		//can call eachother --"FWGOS"--
-		bool where(string where_key, string expressionStr, string where_value);
+		//bool where(string where_key, string expressionStr, string where_value);
+		bool where(string** expression_2d_array, int expression_count);
 		bool select( string* select_vals, int select_val_count );
 
 		bool set_table_name();
