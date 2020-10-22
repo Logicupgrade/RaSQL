@@ -272,6 +272,13 @@ and also the table object for manipulating and updating the table data.
 					string expressions_vals[3] = {the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]};
 					string* expressions[1] = {expressions_vals};
 
+					// cout<<"expression input";
+					// for(int i=0;i<3;i++)
+					// {
+					// 	cout<<expressions[0][i]<<',';
+					// }
+					// cout<<endl;
+
 					//2D string array.. each has 3 depth (ex: 'pid = 5')
 					string expr_part1 = the_parser.commandArray[6];
 					string expr_part2 = the_parser.commandArray[7];
