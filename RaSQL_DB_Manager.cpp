@@ -256,72 +256,101 @@ and also the table object for manipulating and updating the table data.
 			//Select Command
 			else if(the_parser.commandArray[0] == "select")
 			{
+				
+				//put all selects in string array
+				int select_count = 0;
+				int command_search_index = 1;
+
+				//get command Array index before "from" keyword and count of selectors
+				while(the_parser.commandArray[command_search_index] != "from" && select_count<10 )
+				{
+					command_search_index++;
+					select_count++;
+				}
+
+				//debug
+				//cout<<"select_count: "<<select_count<<endl;
+
+				//create select string array
+				string selector_array[select_count];
+				
+				//for all selectors put them into selector array
+				for(int i = 0;i<select_count;i++)
+				{
+					selector_array[i] = the_parser.commandArray[i+1];
+				}
+				//***above grabs variables needed below*********************************
+				//select_count
+				//command_search_index
+				//selector_array
+				//****************************************************************
+
+				
+
+				//string array for all select values
+				//string 
 				int table_parse_index;
 				if(the_parser.commandArray[1] == "*")
 				{
 					table_parse_index = 3;
-				}
-				else
-				{
-					//needs work
-					int attr_count = 2;
-
-					//string array
-					string selectors[attr_count] = {"name","price"};
-					//2d array of strings
-					string expressions_vals[3] = {the_parser.commandArray[6], the_parser.commandArray[7], the_parser.commandArray[8]};
-					string* expressions[1] = {expressions_vals};
-
-					// cout<<"expression input";
-					// for(int i=0;i<3;i++)
-					// {
-					// 	cout<<expressions[0][i]<<',';
-					// }
-					// cout<<endl;
-
-					//2D string array.. each has 3 depth (ex: 'pid = 5')
-					string expr_part1 = the_parser.commandArray[6];
-					string expr_part2 = the_parser.commandArray[7];
-					string expr_part3 = the_parser.commandArray[8];
-
-					RaSQL_Table theTable(the_parser.commandArray[4], current_database, isDebug);
-
-					theTable.where(expressions,1);
-					theTable.select( selectors, 2);
 
 					// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
-					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[4] + ".txt";
-
-					table_parse_index = 4;
-				}
-
-				// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
-				string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[table_parse_index] + ".txt";
-				
-				//creates read file stream
-				ifstream table_stream;
-				table_stream.open(table_filename);
-
-				//table exists..will grab content and print to terminal output
-				if( table_stream.good() )
-				{
-					string temp_str = "";
+					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[table_parse_index] + ".txt";
 					
-					//loops through table file and prints to terminal until end of file
-					while( !table_stream.eof() )
-					{
-						getline(table_stream,temp_str);
+					//creates read file stream
+					ifstream table_stream;
+					table_stream.open(table_filename);
 
-						cout<<temp_str<<endl;
+					//table exists..will grab content and print to terminal output
+					if( table_stream.good() )
+					{
+						string temp_str = "";
+						
+						//loops through table file and prints to terminal until end of file
+						while( !table_stream.eof() )
+						{
+							getline(table_stream,temp_str);
+
+							cout<<temp_str<<endl;
+						}
+		
 					}
-	
+					//did not find table
+					else
+					{
+						error_code = 4;
+						cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
+					}
 				}
-				//did not find table
 				else
 				{
-					error_code = 4;
-					cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
+					//finds 'where' index in command array
+					int where_find = 0;
+					while(the_parser.commandArray[where_find] != "where")
+					{
+						where_find++;
+					}
+					
+					//future: can setup for multiple where expressions
+
+					//2d array of strings.. each has 3 depth (ex: 'pid = 5')
+					string expressions_vals[3] = {the_parser.commandArray[where_find+1], 
+													the_parser.commandArray[where_find+2], 
+														the_parser.commandArray[where_find+3]};
+
+					//expressions contains only one array currently
+					string* expressions[1] = {expressions_vals};
+
+					//instantiates table object
+					RaSQL_Table theTable(the_parser.commandArray[4], current_database, isDebug);
+
+					//FWGOS
+					theTable.where(expressions,1); 
+					theTable.select( selector_array, select_count);
+					
 				}
+
+				
 				
 				
 			}

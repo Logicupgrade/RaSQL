@@ -364,14 +364,15 @@ int RaSQL_Table::update_table(string set_key, string set_value,
 	return updatedCount;
 }
 
-// bool RaSQL_Table::where(string where_key, string expressionStr, string where_value)
-// {
 
 //return int array of rows that match given constraint(s)
 bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 {
 	//initialize current number of rows = all rows
 	int current_num_rows = table_entries;
+
+	//debug
+	//cout<<"current_num_rows: "<<current_num_rows<<endl;
 	
 	//initialize int arrray of rows with matching values
 	int matches[current_num_rows];
@@ -392,28 +393,28 @@ bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 
 				//increments matches array index
 				match_count++;
-			}
-			else
-			{
-				//if row doesnt match we don't need its spot in the matches array
-				current_num_rows--;
-			}
-			
+			}			
 		}
 	}
 
 	//initializes where_matches(table property) to current_num_rows size
-	where_match_count = current_num_rows;
+	where_match_count = match_count;
 	where_matches = new int [where_match_count];
-	cout<<"where_match indices: ";
+	
+	//copies local matches array to table property where_matches array
 	for(int j = 0;j<current_num_rows;j++)
 	{
 		where_matches[j] = matches[j];
-
-
-		cout<<matches[j]<<",";
 	}
-	cout<<endl;
+
+	//debug
+	//cout<<"where_match indices: ";
+	// for(int m = 0; m<where_match_count;m++)
+	// {
+	// 	cout<<where_matches[m]<<",";
+	// }
+	// cout<<endl;
+	// cout<<"________"<<endl;
 
 	return true;
 
@@ -421,48 +422,64 @@ bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 
 bool RaSQL_Table::select( string* select_vals, int select_val_count )
 {
+	//create array for schema indices of size of the count of the selectors
 	int schemaIndices[select_val_count];
 
+	//for each selector fill the schema indices array with the current table column index for matching attributes
 	for(int i=0;i<select_val_count;i++)
 	{
 		schemaIndices[i] = getSchemaIndex(select_vals[i]);
 	}
 
-	
-	//remake currrent_table
-	for(int i=0;i<table_entries;i++)
+	//print the current table filtering out the where indicies(rows) and the selector indicies(columns)
+	for(int j = 0;j<where_match_count;j++)
 	{
-		delete[] current_table[i];
-	}
-
-	delete[] current_table;
-	
-	//make current table of size where_entries X select value count
-	current_table = new string* [where_entries];
-
-	for(int i=0;i<where_entries;i++)
-	{
-		current_table[i] = new string[select_val_count];
-	}
-
-	
-	schema_attr_count = select_val_count;
-	table_entries = where_entries;
-
-	for(int j=0;j<where_entries;j++)
-	{
-		if(whereTable[j][0] != "")
+		for(int k = 0;k<select_val_count;k++)
 		{
-			for(int m=0;m<select_val_count;m++)
+			cout<<current_table[where_matches[j]][schemaIndices[k]];
+
+			if(k<select_val_count-1)
 			{
-				current_table[j][m]=whereTable[j][schemaIndices[m]];
+				cout<<" | ";
 			}
 		}
+
+		cout<<endl;
 		
 	}
-	
 
-	update_table_file();
+	
+	// //remake currrent_table
+	// for(int i=0;i<table_entries;i++)
+	// {
+	// 	delete[] current_table[i];
+	// }
+
+	// delete[] current_table;
+	
+	//make current table of size where_entries X select value count
+	// current_table = new string* [where_entries];
+
+	// for(int i=0;i<where_entries;i++)
+	// {
+	// 	current_table[i] = new string[select_val_count];
+	// }
+
+	
+	// schema_attr_count = select_val_count;
+	// table_entries = where_entries;
+
+	// for(int j=0;j<where_entries;j++)
+	// {
+	// 	if(whereTable[j][0] != "")
+	// 	{
+	// 		for(int m=0;m<select_val_count;m++)
+	// 		{
+	// 			current_table[j][m]=whereTable[j][schemaIndices[m]];
+	// 		}
+	// 	}
+		
+	// }
 
 
 	

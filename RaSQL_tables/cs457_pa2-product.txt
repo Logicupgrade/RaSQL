@@ -1,1 +1,3 @@
-pid int | name varchar(20) | price float
+pid in | name varchar(20 | price float
+2 | 'powergizmo' | 29.99
+3 | 'singletouch' | 149.99

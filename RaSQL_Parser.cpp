@@ -136,11 +136,18 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 		{
 			command = command.substr(2,command.length());
 		}
+
+		//comma check
+		if(command[command.length()-1] == ',')
+		{
+			//remove ','
+			command = command.substr(0,command.length() - 1);
+		}
 		
 
 		commandArray[commandCount] = command;
 
-		if(command[command.length() - 1] == ';')
+		if( command[command.length() - 1] == ';' )
 		{
 			//remove ';'
 			commandArray[commandCount] = command.substr(0,command.length() - 1);
