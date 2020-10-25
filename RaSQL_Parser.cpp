@@ -143,6 +143,14 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 			//remove ','
 			command = command.substr(0,command.length() - 1);
 		}
+
+		//parenthesis check excluding "varchar()"
+		if(command[command.length()-1] == ')' && 
+			command.substr(0,7) != "varchar")
+		{
+			//remove ')'
+			command = command.substr(0,command.length() - 1);
+		}
 		
 
 		commandArray[commandCount] = command;
@@ -179,13 +187,13 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 		commandArray[3] = commandArray[3].substr( 1, commandArray[3].length() );
 
 		//remove last char "," from every attribute type
-		for(int j=4;j<21;j+=2)
-		{
-			if(commandArray[j] != "")
-			{
-				commandArray[j] = commandArray[j].substr( 0, (commandArray[j].length()-1) );
-			}
-		}
+		// for(int j=4;j<21;j+=2)
+		// {
+		// 	if(commandArray[j] != "")
+		// 	{
+		// 		commandArray[j] = commandArray[j].substr( 0, (commandArray[j].length()-1) );
+		// 	}
+		// }
 
 	}
 

@@ -14,13 +14,15 @@ in order for maniputation of data and then updates the table file when done.
 int RaSQL_Table::countSchemaAttr(string schemaLine)
 {
 	//count the '|' chars + 1
-	int count = 1;
+	int count = 0;
 
 	//check for empty file
 	if(schemaLine.length() > 0)
 	{
+
+		count = 1;
+
 		//count schema attributes
-		
 		for(int i=0;i<int(schemaLine.length());i++)
 		{
 			if(schemaLine[i] == '|')
@@ -31,6 +33,59 @@ int RaSQL_Table::countSchemaAttr(string schemaLine)
 	}
 
 	return count;
+}
+
+//gets the schema and fills full_table_schema and table_schema
+		//gets schema Attr count
+bool RaSQL_Table::getSchema( string schema_line )
+{
+	//initialize schema(Table properties) variables
+	schema_attr_count = countSchemaAttr(schema_line);
+
+	//does include attr types
+	full_table_schema = new string[schema_attr_count * 2];
+
+	//schema array indices
+	int index = 0;
+
+	//used to indicate whether attr or attr type
+	bool attr_type = false;
+
+	string temp_str = "";
+
+	//loop length of schema string
+	for(int i=0;i<int(schema_line.length());i++)
+	{
+		//if char is space store string as attr and 
+		//reset string and skip 1 char
+		if(schema_line[i] == ' ')
+		{
+			full_table_schema[index] = temp_str;
+			temp_str = "";
+
+			index++;
+			i++;
+
+		}
+
+		//if char is | skip 2 chars
+		if(schema_line[i] == '|')
+		{
+			i+=2;
+		}
+
+		temp_str = temp_str + schema_line[i];
+
+		if( i == int(schema_line.length()-1) )
+		{
+			full_table_schema[index] = temp_str;
+		}
+	}
+
+
+	//***********************
+	
+	return true;
 }
 
 bool RaSQL_Table::makeCurrentTable()
@@ -129,6 +184,7 @@ bool RaSQL_Table::update_table_file()
 	//if table file found
 	if( table_stream.good() == 1 )
 	{
+		//**maybe replace with full_table_schema loop
 		table_stream<<schema_input<<endl;
 
 		//iterate through each entry
@@ -191,12 +247,19 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 		//grabbing schema for use in update (not relevant to this flow)
 		schema_input = tempSchema;
 
+		getSchema(tempSchema);
+		for(int i=0;i<(schema_attr_count*2);i++)
+		{
+			cout<<"attr["<<i<<"]:"<<full_table_schema[i]<<endl;
+		}
+		//***replace with getSchema()
 		//update schema attr count
 		schema_attr_count = countSchemaAttr(tempSchema);
 
 		//instantiate schema array of count
 		table_schema = new string[schema_attr_count];
 
+		//loop through attributes
 		for(int i=0;i<schema_attr_count;i++)
 		{
 			table_schema[i] = tempSchema.substr(0,tempSchema.find(" "));

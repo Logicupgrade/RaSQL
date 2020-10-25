@@ -34,6 +34,7 @@ class RaSQL_Table
 		string schema_input;
 
 		string* table_schema;
+		string* full_table_schema;
 
 		string** current_table;
 		string** selectTable;//used in select
@@ -42,6 +43,11 @@ class RaSQL_Table
 
 		//helper functions
 		int countSchemaAttr(string schemaLine);
+
+		//gets the schema and fills full_table_schema and table_schema
+		//returns schema Attr count
+		bool getSchema( string schema_line );
+
 		bool makeCurrentTable();
 		int getSchemaIndex(string possible_attr);
 		bool whereMatch(string* check_entry, string where_key, string expressionStr, string where_value);
