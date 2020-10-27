@@ -35,51 +35,100 @@ int RaSQL_Table::countSchemaAttr(string schemaLine)
 	return count;
 }
 
-//gets the schema and fills full_table_schema and table_schema
-		//gets schema Attr count
+//initializes table_schema, table_schema_w_type, and full_table_schema
 bool RaSQL_Table::getSchema( string schema_line )
 {
+	if( int(schema_line.length()) < 1)
+	{
+		return false;
+	}
+
 	//initialize schema(Table properties) variables
 	schema_attr_count = countSchemaAttr(schema_line);
 
 	//does include attr types
 	full_table_schema = new string[schema_attr_count * 2];
+	table_schema_w_type = new string[schema_attr_count];
+	table_schema = new string[schema_attr_count];
 
-	//schema array indices
+	//full_table_schema indices
 	int index = 0;
+	//table_schema_w_type indices
+	int index2 = 0;
+	//table_schema indices
+	int index3 = 0;
 
-	//used to indicate whether attr or attr type
-	bool attr_type = false;
+	//counts number of spaces
+	int space_count = 0;
 
+	//temp strings
 	string temp_str = "";
+	string temp_str2 = "";
+	string temp_str3 = "";
 
 	//loop length of schema string
 	for(int i=0;i<int(schema_line.length());i++)
 	{
 		//if char is space store string as attr and 
-		//reset string and skip 1 char
+		 
 		if(schema_line[i] == ' ')
 		{
 			full_table_schema[index] = temp_str;
+			
+			//reset string
 			temp_str = "";
 
+			if(space_count < 1)
+			{
+				temp_str2 = temp_str2 + ' ';
+
+				table_schema[index3] = temp_str3;
+
+				//reset string
+				temp_str3 = "";
+				index3++;
+			}
+
+
 			index++;
+
+			//skip 1 char
 			i++;
 
-		}
+			space_count++;
+			if(space_count == 2)
+			{
+				space_count = 0;
+			}
 
+		}
+		
 		//if char is | skip 2 chars
 		if(schema_line[i] == '|')
 		{
+			table_schema_w_type[index2] = temp_str2;
+			temp_str2 = "";
+
+			index2++;
+
 			i+=2;
 		}
-
+		
 		temp_str = temp_str + schema_line[i];
+		temp_str2 = temp_str2 + schema_line[i];
+
+		if(space_count < 1)
+		{
+			temp_str3 = temp_str3 + schema_line[i];
+		}
+		
 
 		if( i == int(schema_line.length()-1) )
 		{
 			full_table_schema[index] = temp_str;
+			table_schema_w_type[index2] = temp_str2;
 		}
+		
 	}
 
 
@@ -181,6 +230,8 @@ bool RaSQL_Table::update_table_file()
 	ofstream table_stream;
 	table_stream.open(table_filename, ios::trunc);
 
+	int skipped = 0;
+
 	//if table file found
 	if( table_stream.good() == 1 )
 	{
@@ -191,7 +242,11 @@ bool RaSQL_Table::update_table_file()
 		for(int i=0;i<table_entries;i++)
 		{
 			//if empty skip because most likely deleted
-			if(current_table[i][0] != "" )
+			if(current_table[i][0] == "" )
+			{
+				skipped++;
+			}
+			else
 			{
 				//iterate through each entry's attribute
 				for(int j=0;j<schema_attr_count;j++)
@@ -205,14 +260,20 @@ bool RaSQL_Table::update_table_file()
 						table_stream<<" | ";
 					}
 				}
+				// cout<<"skipped+1:"<<skipped+1<<endl;
+				// if(i<(table_entries-(1+skipped) ) )
+				// {
+				// 	table_stream<<endl;
+				// }
 				if(i<table_entries-1)
 				{
-					table_stream<<endl;
-				}
-				
+					if(current_table[i+1][0]!="")
+					{
+						table_stream<<endl;
+					}
+				}	
 			}
-			
-			
+					
 			
 		}
 	
@@ -248,28 +309,36 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 		schema_input = tempSchema;
 
 		getSchema(tempSchema);
-		for(int i=0;i<(schema_attr_count*2);i++)
-		{
-			cout<<"attr["<<i<<"]:"<<full_table_schema[i]<<endl;
-		}
+		// for(int i=0;i<(schema_attr_count*2);i++)
+		// {
+		// 	cout<<"attr["<<i<<"]:"<<full_table_schema[i]<<endl;
+		// }
+		// for(int i=0;i<(schema_attr_count);i++)
+		// {
+		// 	cout<<"attr w type["<<i<<"]:"<<table_schema_w_type[i]<<endl;
+		// }
+		// for(int i=0;i<(schema_attr_count);i++)
+		// {
+		// 	cout<<"lone attr["<<i<<"]:"<<table_schema[i]<<endl;
+		// }
 		//***replace with getSchema()
 		//update schema attr count
-		schema_attr_count = countSchemaAttr(tempSchema);
+		//schema_attr_count = countSchemaAttr(tempSchema);
 
 		//instantiate schema array of count
-		table_schema = new string[schema_attr_count];
+		//table_schema = new string[schema_attr_count];
 
 		//loop through attributes
-		for(int i=0;i<schema_attr_count;i++)
-		{
-			table_schema[i] = tempSchema.substr(0,tempSchema.find(" "));
+		// for(int i=0;i<schema_attr_count;i++)
+		// {
+		// 	table_schema[i] = tempSchema.substr(0,tempSchema.find(" "));
 
-			if( int( tempSchema.find("|") ) > -1)
-			{
-				tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
-			}
+		// 	if( int( tempSchema.find("|") ) > -1)
+		// 	{
+		// 		tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
+		// 	}
 			
-		}
+		// }
 		
 		//Get number of row entries in table
 		string placholder;
@@ -492,13 +561,25 @@ bool RaSQL_Table::select( string* select_vals, int select_val_count )
 	for(int i=0;i<select_val_count;i++)
 	{
 		schemaIndices[i] = getSchemaIndex(select_vals[i]);
+
+		cout<<table_schema_w_type[schemaIndices[i]];
+
+		if(i < select_val_count-1)
+		{
+			cout<<" | ";
+		}
 	}
+
+	cout<<endl;
+	
+			
 
 	//print the current table filtering out the where indicies(rows) and the selector indicies(columns)
 	for(int j = 0;j<where_match_count;j++)
 	{
 		for(int k = 0;k<select_val_count;k++)
 		{
+			
 			cout<<current_table[where_matches[j]][schemaIndices[k]];
 
 			if(k<select_val_count-1)

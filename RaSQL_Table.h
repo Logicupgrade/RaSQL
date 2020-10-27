@@ -34,6 +34,7 @@ class RaSQL_Table
 		string schema_input;
 
 		string* table_schema;
+		string* table_schema_w_type;
 		string* full_table_schema;
 
 		string** current_table;
