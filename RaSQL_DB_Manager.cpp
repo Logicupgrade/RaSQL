@@ -268,9 +268,6 @@ and also the table object for manipulating and updating the table data.
 					select_count++;
 				}
 
-				//debug
-				//cout<<"select_count: "<<select_count<<endl;
-
 				//create select string array
 				string selector_array[select_count];
 				

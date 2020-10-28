@@ -260,18 +260,20 @@ bool RaSQL_Table::update_table_file()
 						table_stream<<" | ";
 					}
 				}
-				// cout<<"skipped+1:"<<skipped+1<<endl;
-				// if(i<(table_entries-(1+skipped) ) )
-				// {
-				// 	table_stream<<endl;
-				// }
-				if(i<table_entries-1)
+				
+				//loops through entries and finds first non "" then adds '\n'
+				int k = i+1;
+				while(k<table_entries)
 				{
-					if(current_table[i+1][0]!="")
+					if(current_table[k][0] != "" )
 					{
 						table_stream<<endl;
+						break;
 					}
-				}	
+
+					k++;
+				}
+					
 			}
 					
 			
