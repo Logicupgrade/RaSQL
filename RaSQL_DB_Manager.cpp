@@ -461,7 +461,7 @@ and also the table object for manipulating and updating the table data.
 			{
 				//exit status
 				status = -1;
-				cout<<"All done"<<endl;
+				cout<<"All done."<<endl;
 			}
 			else
 			{

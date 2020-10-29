@@ -47,13 +47,11 @@ int main(int argc, char** argv)
             cout<<">>";
         }
 
-        int count = 0;
         i = 0;
-
         tempString = "";
         
         getline(cin,tempString);
-
+        
         if( (tempString[0] == '-' && tempString[1] == '-' ) || 
                     tempString[0] == ' ' || 
                         tempString[0] =='\n'||
@@ -64,7 +62,7 @@ int main(int argc, char** argv)
         }
 
         
-        else if(tempString.substr(0,5) == ".exit")
+        else if(tempString.substr(0,5) == ".exit" || tempString.substr(0,5) == ".EXIT")
         {
             cout<<"All done."<<endl;
             return 0;
@@ -75,7 +73,9 @@ int main(int argc, char** argv)
             
             if(tempString[i] == ';')
             {
-                //cout<<"Command:"<<DBCommand<<endl;
+                //debug
+                cout<<"Command:"<<DBCommand<<endl;
+
                 //passese current command string and current db to be managed
                 the_manager.manage_cmd(DBCommand, current_DB);
 

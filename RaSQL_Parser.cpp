@@ -30,7 +30,7 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	int frontIndex = 0;
 	int endIndex;
 	int endCmdStr = cmd_str.length();
-	bool clearEmpty = false;
+	// bool clearEmpty = false;
 	bool isLastCmd = false;
 	string command;
 	string leftOverStr;
@@ -41,30 +41,30 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 
 	
 	
-	while(!clearEmpty)
-	{
-		//parse out comments
-		if( (cmd_str[frontIndex] == '-') && (cmd_str[frontIndex+1] == '-') )
-		{
-			int i = 0;
-			while(cmd_str[i] != '\r')
-			{
-				cout<<"cmd_char:"<<cmd_str[i]<<" |cmd_char_int:"<<int(cmd_str[i])<<endl;
-				i++;
-			}
-			i++;
-			frontIndex = i;	
-		}
-		//parse out nulls and new line chars and carriage returns
-		else if(cmd_str[frontIndex] == '\0' || cmd_str[frontIndex] == '\n' || cmd_str[frontIndex] == '\r')
-		{
-			frontIndex++;
-		}
-		else
-		{
-			clearEmpty = true;	
-		}
-	}
+	// while(!clearEmpty)
+	// {
+	// 	//parse out comments
+	// 	if( (cmd_str[frontIndex] == '-') && (cmd_str[frontIndex+1] == '-') )
+	// 	{
+	// 		int i = 0;
+	// 		while(cmd_str[i] != '\r')
+	// 		{
+	// 			cout<<"cmd_char:"<<cmd_str[i]<<" |cmd_char_int:"<<int(cmd_str[i])<<endl;
+	// 			i++;
+	// 		}
+	// 		i++;
+	// 		frontIndex = i;	
+	// 	}
+	// 	//parse out nulls and new line chars and carriage returns
+	// 	else if(cmd_str[frontIndex] == '\0' || cmd_str[frontIndex] == '\n' || cmd_str[frontIndex] == '\r')
+	// 	{
+	// 		frontIndex++;
+	// 	}
+	// 	else
+	// 	{
+	// 		clearEmpty = true;	
+	// 	}
+	// }
 	
 	//parse out '.exit'
 	if(int(cmd_str.find(".exit"))>-1)
@@ -73,8 +73,11 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 		return true;
 	}
 
+	//**TODO Parse out stuff with parenthesis ie: (kh,jkshdk,sdjf)
+		//watch out for tabs and spaces
+
 	//parse out 'insert into'
-	else if(int(cmd_str.find("insert into")) > -1 )
+	if(int(cmd_str.find("insert into")) > -1 )
 	{
 		int tempBegin = cmd_str.find("into")+4;
 		int tempEnd = cmd_str.find("values")-2;
