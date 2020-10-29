@@ -26,16 +26,19 @@ using namespace std;
 int main(int argc, char** argv)
 {
     //show variables for debugging
-    bool                showDebug = false;
-
-    string              DBCommand;
-    string              current_DB;
+    bool                showDebug = true;
     bool                isGood = true;
+
+    string              tempString = "";
+    string              DBCommand = "";
+    string              current_DB = "";
+
     RaSQL_DB_Manager    the_manager(showDebug);
 
     //debug parser
     RaSQL_Parser        the_parser;
 
+    int i;
     while(isGood)
     {
         //command line prompt
@@ -44,21 +47,61 @@ int main(int argc, char** argv)
             cout<<">>";
         }
 
-        //copies input command until ';' into DBCommand variable
-        getline(cin,DBCommand, ';' );
+        int count = 0;
+        i = 0;
 
-        //debug - repeats input command
-        //cout<<DBCommand<<endl;
-
-        //passese current command string and current db to be managed
-        the_manager.manage_cmd(DBCommand, current_DB);
+        tempString = "";
         
+        getline(cin,tempString);
+
+        if( (tempString[0] == '-' && tempString[1] == '-' ) || 
+                    tempString[0] == ' ' || 
+                        tempString[0] =='\n'||
+                            tempString[0] =='\r'||
+                                tempString[0] == 0)
+        {
+            tempString = "";
+        }
+
+        
+        else if(tempString.substr(0,5) == ".exit")
+        {
+            cout<<"All done."<<endl;
+            return 0;
+        }
+        
+        while( tempString != "")
+        {
+            
+            if(tempString[i] == ';')
+            {
+                //cout<<"Command:"<<DBCommand<<endl;
+                //passese current command string and current db to be managed
+                the_manager.manage_cmd(DBCommand, current_DB);
+
+                DBCommand = "";
+                break;
+            }
+            else if(tempString[i] =='\n'|| tempString[i] =='\r')
+            {
+                break;
+            }
+            else
+            {
+                DBCommand = DBCommand + tempString[i];
+            }
+
+            i++;
+        }
+
         //Exit Conditions
         if(cin.eof() || (the_manager.get_status() == -1) )
         {
             isGood = false;
         }
+ 
     }
-    
-}
 
+    //should not get here
+    exit(1);
+}

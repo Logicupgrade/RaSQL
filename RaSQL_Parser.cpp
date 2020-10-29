@@ -47,8 +47,9 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 		if( (cmd_str[frontIndex] == '-') && (cmd_str[frontIndex+1] == '-') )
 		{
 			int i = 0;
-			while(cmd_str[i]!= '\r')
+			while(cmd_str[i] != '\r')
 			{
+				cout<<"cmd_char:"<<cmd_str[i]<<" |cmd_char_int:"<<int(cmd_str[i])<<endl;
 				i++;
 			}
 			i++;
