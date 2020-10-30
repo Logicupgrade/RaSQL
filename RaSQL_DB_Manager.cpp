@@ -90,7 +90,7 @@ and also the table object for manipulating and updating the table data.
 			RaSQL_Parser the_parser;
 			
 			//parse the input command string
-			the_parser.parseInput(commandStr);
+			the_parser.parseInput2(commandStr);
 			
 			//Iterates through comand array
 				//counts commands in command array -- updates command_count manager property

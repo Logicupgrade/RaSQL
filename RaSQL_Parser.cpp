@@ -204,6 +204,62 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	return true;
 }
 
+bool RaSQL_Parser::parseInput2(string cmd_str)
+{
+
+	
+	string tempString = "";
+	int temp_index = 0;
+
+	//initialize string to parse
+	cmd_str = strToLower(cmd_str.length(),cmd_str);
+	clear();
+
+	if( !cmd_str.empty() )
+	{
+		//loop through chars
+		for(int i=0;i<int(cmd_str.length());i++ )
+		{
+			//if ' ' or '\t' or ',' or '(' or ')'
+			if(	cmd_str[i] == ' '||
+					cmd_str[i] == '\t'||
+						cmd_str[i] == ','||
+							cmd_str[i] == '('||
+								cmd_str[i] == ')' )
+			{
+				if( !tempString.empty() )
+				{
+					commandArray[commandCount] = tempString;
+					commandCount++;
+					tempString = "";
+				}
+			}
+			else
+			{
+				tempString = tempString + cmd_str[i];
+			}
+
+			//if string == varchar skip '(',')'
+			if(tempString == "varchar")
+			{
+				temp_index = cmd_str.find(')',i);
+				commandArray[commandCount] = tempString + cmd_str.substr(i+1,temp_index-(i));
+				
+				commandCount++;
+				i = temp_index;
+				tempString = "";
+			}
+
+			//cout<<"tempString: "<<tempString<<endl;
+		}
+
+		commandArray[commandCount] = tempString;
+		commandCount++;
+	}
+
+	return true;
+}
+
 void RaSQL_Parser::clear()
 {
 	for(int i = 0;i<20;i++)
