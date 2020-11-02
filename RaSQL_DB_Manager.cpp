@@ -259,6 +259,7 @@ and also the table object for manipulating and updating the table data.
 				
 				//put all selects in string array
 				int select_count = 0;
+				int table_count = 0;
 				int command_search_index = 1;
 
 				//get command Array index before "from" keyword and count of selectors
@@ -268,83 +269,110 @@ and also the table object for manipulating and updating the table data.
 					select_count++;
 				}
 
-				//create select string array
-				string selector_array[select_count];
+				command_search_index++;
 				
-				//for all selectors put them into selector array
-				for(int i = 0;i<select_count;i++)
+				//get number of table arguments
+				while( (the_parser.commandArray[command_search_index] != "where" &&
+						the_parser.commandArray[command_search_index] != "on") &&
+							table_count<10 )
 				{
-					selector_array[i] = the_parser.commandArray[i+1];
+					command_search_index++;
+					table_count++;
 				}
-				//***above grabs variables needed below*********************************
-				//select_count
-				//command_search_index
-				//selector_array
-				//****************************************************************
 
-				
-
-				//string array for all select values
-				//string 
-				int table_parse_index;
-				if(the_parser.commandArray[1] == "*")
+				//if dealing with more than one table
+				if(table_count > 1)
 				{
-					table_parse_index = 3;
+					RaSQL_Table* t1 = new RaSQL_Table(the_parser.commandArray[3], current_database, isDebug);
+					RaSQL_Table* t2 = new RaSQL_Table(the_parser.commandArray[5], current_database, isDebug);
 
-					// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
-					string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[table_parse_index] + ".txt";
-					
-					//creates read file stream
-					ifstream table_stream;
-					table_stream.open(table_filename);
-
-					//table exists..will grab content and print to terminal output
-					if( table_stream.good() )
-					{
-						string temp_str = "";
-						
-						//loops through table file and prints to terminal until end of file
-						while( !table_stream.eof() )
-						{
-							getline(table_stream,temp_str);
-
-							cout<<temp_str<<endl;
-						}
-		
-					}
-					//did not find table
-					else
-					{
-						error_code = 4;
-						cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
-					}
+					RaSQL_Table joinedTable(t1, the_parser.commandArray[4], t2, the_parser.commandArray[6],
+							"", the_parser.commandArray[8], the_parser.commandArray[9], the_parser.commandArray[10]);
 				}
+				//if dealing with only one table
 				else
 				{
-					//finds 'where' index in command array
-					int where_find = 0;
-					while(the_parser.commandArray[where_find] != "where")
+					
+				
+					//create select string array
+					string selector_array[select_count];
+					
+					//for all selectors put them into selector array
+					for(int i = 0;i<select_count;i++)
 					{
-						where_find++;
+						selector_array[i] = the_parser.commandArray[i+1];
 					}
+					//***above grabs variables needed below*********************************
+					//select_count
+					//command_search_index
+					//selector_array
+					//****************************************************************
+
 					
-					//future: can setup for multiple where expressions
 
-					//2d array of strings.. each has 3 depth (ex: 'pid = 5')
-					string expressions_vals[3] = {the_parser.commandArray[where_find+1], 
-													the_parser.commandArray[where_find+2], 
-														the_parser.commandArray[where_find+3]};
+					//string array for all select values
+					//string 
+					int table_parse_index;
+					if(the_parser.commandArray[1] == "*")
+					{
+						table_parse_index = 3;
 
-					//expressions contains only one array currently
-					string* expressions[1] = {expressions_vals};
+						// creates table filename: "RaSQL_tables/" + "current database" + "-" + <table name> + ".txt"
+						string table_filename = "RaSQL_tables/" + current_database +"-"+ the_parser.commandArray[table_parse_index] + ".txt";
+						
+						//creates read file stream
+						ifstream table_stream;
+						table_stream.open(table_filename);
 
-					//instantiates table object
-					RaSQL_Table theTable(the_parser.commandArray[4], current_database, isDebug);
+						//table exists..will grab content and print to terminal output
+						if( table_stream.good() )
+						{
+							string temp_str = "";
+							
+							//loops through table file and prints to terminal until end of file
+							while( !table_stream.eof() )
+							{
+								getline(table_stream,temp_str);
 
-					//FWGOS
-					theTable.where(expressions,1); 
-					theTable.select( selector_array, select_count);
-					
+								cout<<temp_str<<endl;
+							}
+			
+						}
+						//did not find table
+						else
+						{
+							error_code = 4;
+							cout<<"!Failed to query table '"<<the_parser.commandArray[3]<<"' because it does not exist."<<endl;
+						}
+					}
+					else
+					{
+						//finds 'where' index in command array
+						int where_find = 0;
+						while(the_parser.commandArray[where_find] != "where")
+						{
+							where_find++;
+						}
+						
+						//future: can setup for multiple where expressions
+
+						//2d array of strings.. each has 3 depth (ex: 'pid = 5')
+						string expressions_vals[3] = {the_parser.commandArray[where_find+1], 
+														the_parser.commandArray[where_find+2], 
+															the_parser.commandArray[where_find+3]};
+
+						//expressions contains only one array currently
+						string* expressions[1] = {expressions_vals};
+
+						//instantiates table object
+						RaSQL_Table theTable(the_parser.commandArray[4], current_database, isDebug);
+
+						//FWGOS
+						theTable.where(expressions,1); 
+						theTable.select( selector_array, select_count);
+						
+					}
+
 				}
 
 				

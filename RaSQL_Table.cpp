@@ -412,6 +412,111 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 
 	table_stream.close();
 }
+
+RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, string t2_alias,
+							string join_type, string w_key, string w_expression, string w_value)
+{
+	string expression_array[3] = {w_key,w_expression,w_value};
+	string* expression_2d[1] = {expression_array}; 
+
+	t1->addAttrPrefix(t1_alias);
+	t2->addAttrPrefix(t2_alias);
+	
+	// setup joined attributes
+	schema_attr_count = t1->schema_attr_count + t2->schema_attr_count;
+
+	table_schema = new string[schema_attr_count];
+	full_table_schema = new string[schema_attr_count];
+
+	for(int i=0;i<t1->schema_attr_count;i++)
+	{
+		table_schema[i] = t1->table_schema[i];
+		full_table_schema[i] = t1->full_table_schema[i];
+	}
+	for(int j=t1->schema_attr_count;j<schema_attr_count;j++)
+	{
+		table_schema[j] = t2->table_schema[j-t1->schema_attr_count];
+		full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count];
+	}
+
+	//create full table join
+	table_entries = t1->table_entries * t2->table_entries;
+
+	makeCurrentTable();
+
+	//fill current table with both table entries
+
+	//number of entries
+	int q=0;
+	//number of t1 entries
+	for(int s=0;s<t1->table_entries;s++)
+	{
+		//number of t2 entries
+		for(int r=0;r<t2->table_entries;r++)
+		{
+			//enter t1 entries
+			for(int t=0;t<t1->schema_attr_count;t++)
+			{
+				current_table[q][t] = t1->current_table[s][t];
+			}
+			//enter t2 entries
+			for(int u=t1->schema_attr_count;u<schema_attr_count;u++)
+			{
+				current_table[q][u] = t2->current_table[r][u-t1->schema_attr_count];
+			}
+			q++;	
+		}
+	}
+
+	where(expression_2d,1);
+
+	// string temp_str_array[1] = {"*"};
+	//select(table_schema,schema_attr_count);
+
+	cout<<"Where match:"<<where_match_count<<endl;
+	for(int j = 0;j<where_match_count;j++)
+	{
+		cout<<"Where matches:"<<where_matches[j]<<',';
+	}
+	cout<<endl;
+
+	for(int j = 0;j<where_match_count;j++)
+	{
+		for(int k = 0;k<schema_attr_count;k++)
+		{
+			
+			cout<<current_table[where_matches[j]][k];
+
+			if(k<schema_attr_count-1)
+			{
+				cout<<" | ";
+			}
+		}
+
+		cout<<endl;
+	}
+
+	//debug
+	cout<<"attr"<<endl;
+	for(int k =0;k<schema_attr_count;k++)
+	{
+		cout<<full_table_schema[k]<<"|";
+	}
+	cout<<endl;
+	cout<<"table entries:"<<endl;
+	for(int l =0;l<table_entries;l++)
+	{
+		for(int m=0;m<schema_attr_count;m++)
+		{
+			cout<<current_table[l][m]<<",";
+		}
+		cout<<endl;
+		
+	}
+
+	exit(0);
+}
+
 int RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)
 {
 	int deleteCount = 0;
@@ -556,6 +661,19 @@ bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 
 bool RaSQL_Table::select( string* select_vals, int select_val_count )
 {
+
+	// if(select_vals[0] == "*")
+	// {
+	// 	select_vals = new string[where_match_count];
+
+	// 	for(int i=0;i<where_match_count;i++)
+	// 	{
+	// 		select_vals[i] = where_matches[i];
+	// 	}
+		
+	// 	select_val_count = where_match_count;
+	// }
+
 	//create array for schema indices of size of the count of the selectors
 	int schemaIndices[select_val_count];
 
@@ -654,4 +772,16 @@ bool RaSQL_Table::remove_schema_attr()
 void RaSQL_Table::debugMode( bool toDeOrNotToDe )
 {
 	isDebug = toDeOrNotToDe; 
+}
+
+//adds table alias + '.' in front of all attributes 
+void RaSQL_Table::addAttrPrefix(string table_name)
+{
+	//initialize table schema with prefix 
+	table_schema_w_pre = new string[schema_attr_count];
+
+	for(int i=0;i<schema_attr_count;i++)
+	{
+		table_schema_w_pre[i] = table_name + '.' + table_schema[i];
+	}
 }

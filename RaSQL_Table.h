@@ -35,6 +35,7 @@ class RaSQL_Table
 
 		string* table_schema;
 		string* table_schema_w_type;
+		string* table_schema_w_pre;
 		string* full_table_schema;
 
 		string** current_table;
@@ -57,7 +58,12 @@ class RaSQL_Table
 		bool update_table_file();
 
 	public:
+		//Normal single table constructor
 		RaSQL_Table(string table_name, string currentDB, bool debugger);
+
+		//Multitable join constructor
+		RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, string t2_alias,
+						string join_type, string w_key, string w_expression, string w_value);
 
 		bool insert(string* values);
 		int delete_vals(string where_key, string expressionStr, string where_value);
@@ -79,6 +85,8 @@ class RaSQL_Table
 		bool remove_schema_attr();
 
 		void debugMode( bool toDeOrNotToDe );
+
+		void addAttrPrefix(string table_name);
 
 		
 		

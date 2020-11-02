@@ -206,8 +206,6 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 
 bool RaSQL_Parser::parseInput2(string cmd_str)
 {
-
-	
 	string tempString = "";
 	int temp_index = 0;
 
