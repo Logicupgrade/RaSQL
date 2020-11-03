@@ -417,7 +417,7 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 							string join_type, string w_key, string w_expression, string w_value)
 {
 	string expression_array[3] = {w_key,w_expression,w_value};
-	string* expression_2d[1] = {expression_array}; 
+	string* expression_2d[1] = {expression_array};
 
 	t1->addAttrPrefix(t1_alias);
 	t2->addAttrPrefix(t2_alias);
@@ -426,17 +426,29 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 	schema_attr_count = t1->schema_attr_count + t2->schema_attr_count;
 
 	table_schema = new string[schema_attr_count];
-	full_table_schema = new string[schema_attr_count];
+	full_table_schema = new string[2*schema_attr_count];
+	table_schema_w_pre = new string[schema_attr_count];
 
 	for(int i=0;i<t1->schema_attr_count;i++)
 	{
 		table_schema[i] = t1->table_schema[i];
-		full_table_schema[i] = t1->full_table_schema[i];
+		//full_table_schema[i] = t1->full_table_schema[i];
+		table_schema_w_pre[i] = t1->table_schema_w_pre[i];
 	}
 	for(int j=t1->schema_attr_count;j<schema_attr_count;j++)
 	{
 		table_schema[j] = t2->table_schema[j-t1->schema_attr_count];
-		full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count];
+		//full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count];
+		table_schema_w_pre[j] = t2->table_schema_w_pre[j-t1->schema_attr_count];
+	}
+
+	for(int i=0;i<t1->schema_attr_count*2;i++)
+	{
+		full_table_schema[i] = t1->full_table_schema[i];
+	}
+	for(int j=t1->schema_attr_count*2;j<schema_attr_count*2;j++)
+	{
+		full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count*2];
 	}
 
 	//create full table join
@@ -468,49 +480,48 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 		}
 	}
 
-	where(expression_2d,1);
+	
+	//Refactor at some point
+	string temp_string[schema_attr_count];
 
-	// string temp_str_array[1] = {"*"};
-	//select(table_schema,schema_attr_count);
-
-	cout<<"Where match:"<<where_match_count<<endl;
-	for(int j = 0;j<where_match_count;j++)
+	for(int i=0;i<schema_attr_count;i++)
 	{
-		cout<<"Where matches:"<<where_matches[j]<<',';
+		temp_string[i] = table_schema[i];
+		table_schema[i] = table_schema_w_pre[i];
 	}
-	cout<<endl;
+	//****
 
-	for(int j = 0;j<where_match_count;j++)
-	{
-		for(int k = 0;k<schema_attr_count;k++)
-		{
-			
-			cout<<current_table[where_matches[j]][k];
+	//get index values of keys
+	int w_key_index = getSchemaIndex(w_key);
+	int w_value_index = getSchemaIndex(w_value);
 
-			if(k<schema_attr_count-1)
-			{
-				cout<<" | ";
-			}
-		}
-
-		cout<<endl;
-	}
 
 	//debug
-	cout<<"attr"<<endl;
-	for(int k =0;k<schema_attr_count;k++)
+	
+	for(int k =0;k<schema_attr_count*2;k++)
 	{
-		cout<<full_table_schema[k]<<"|";
+		cout<<full_table_schema[k]<<" ";
+		if(k%2==1 && k<(schema_attr_count*2 - 1) )
+		{
+			cout<<"| ";
+		}
 	}
 	cout<<endl;
-	cout<<"table entries:"<<endl;
+	
 	for(int l =0;l<table_entries;l++)
 	{
-		for(int m=0;m<schema_attr_count;m++)
+		if(current_table[l][w_key_index] == current_table[l][w_value_index])
 		{
-			cout<<current_table[l][m]<<",";
+			for(int m=0;m<schema_attr_count;m++)
+			{
+				cout<<current_table[l][m];
+				if(m<schema_attr_count-1)
+				{
+					cout<<",";
+				}
+			}
+			cout<<endl;
 		}
-		cout<<endl;
 		
 	}
 
