@@ -416,8 +416,7 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, string t2_alias,
 							string join_type, string w_key, string w_expression, string w_value)
 {
-	string expression_array[3] = {w_key,w_expression,w_value};
-	string* expression_2d[1] = {expression_array};
+	//cout<<"params:"<<t1_alias<<","<<t2_alias<<","<<join_type<<","<<w_key<<","<<w_expression<<","<<w_value<<endl;
 
 	t1->addAttrPrefix(t1_alias);
 	t2->addAttrPrefix(t2_alias);
@@ -496,8 +495,8 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 	int w_value_index = getSchemaIndex(w_value);
 
 
-	//debug
-	
+	//display
+
 	for(int k =0;k<schema_attr_count*2;k++)
 	{
 		cout<<full_table_schema[k]<<" ";
@@ -508,24 +507,96 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 	}
 	cout<<endl;
 	
-	for(int l =0;l<table_entries;l++)
+	if(join_type == "left outer join")
 	{
-		if(current_table[l][w_key_index] == current_table[l][w_value_index])
+		
+		int count_passed = 0;
+		for(int l =0;l<table_entries;l++)
 		{
-			for(int m=0;m<schema_attr_count;m++)
+			if(l%t1->table_entries == 0)
 			{
-				cout<<current_table[l][m];
-				if(m<schema_attr_count-1)
+				count_passed = 0;
+			}
+
+			if(current_table[l][w_key_index] == current_table[l][w_value_index])
+			{
+				for(int m=0;m<schema_attr_count;m++)
 				{
-					cout<<",";
+					cout<<current_table[l][m];
+					if(m<schema_attr_count-1)
+					{
+						cout<<"|";
+					}
+				}
+				cout<<endl;
+			}
+			else
+			{
+				count_passed++;
+				if(count_passed == t1->table_entries)
+				{
+					for(int i=0;i<t1->schema_attr_count;i++)
+					{
+						cout<<current_table[l][i]<<"|";
+					}
+					for(int j=0;j<t2->schema_attr_count;j++)
+					{
+						if(j<t2->schema_attr_count-1)
+						{
+							cout<<"|";
+						}
+					}
+					cout<<endl;
 				}
 			}
-			cout<<endl;
+
 		}
+	}
+	
+	else
+	{
 		
+		
+		for(int l =0;l<table_entries;l++)
+		{
+			if(current_table[l][w_key_index] == current_table[l][w_value_index])
+			{
+				for(int m=0;m<schema_attr_count;m++)
+				{
+					cout<<current_table[l][m];
+					if(m<schema_attr_count-1)
+					{
+						cout<<"|";
+					}
+				}
+				cout<<endl;
+			}
+			
+		}
 	}
 
-	exit(0);
+	//**make function
+	// prints entire current_table
+	// cout<<"____________________"<<endl;
+	// for(int l =0;l<table_entries;l++)
+	// {
+	// 	for(int m=0;m<schema_attr_count;m++)
+	// 	{
+	// 		cout<<current_table[l][m];
+	// 		if(m<schema_attr_count-1)
+	// 		{
+	// 			cout<<",";
+	// 		}
+	// 	}
+	// 	cout<<endl;
+	// }
+
+	// cout<<"____________________"<<endl;
+	
+	
+	
+
+	 
 }
 
 int RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)

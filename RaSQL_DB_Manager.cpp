@@ -274,20 +274,51 @@ and also the table object for manipulating and updating the table data.
 				//get number of table arguments
 				while( (the_parser.commandArray[command_search_index] != "where" &&
 						the_parser.commandArray[command_search_index] != "on") &&
-							table_count<10 )
+							command_search_index < the_parser.commandCount )
 				{
 					command_search_index++;
 					table_count++;
 				}
 
 				//if dealing with more than one table
+				
 				if(table_count > 1)
 				{
-					RaSQL_Table* t1 = new RaSQL_Table(the_parser.commandArray[3], current_database, isDebug);
-					RaSQL_Table* t2 = new RaSQL_Table(the_parser.commandArray[5], current_database, isDebug);
+					
 
-					RaSQL_Table joinedTable(t1, the_parser.commandArray[4], t2, the_parser.commandArray[6],
-							"", the_parser.commandArray[8], the_parser.commandArray[9], the_parser.commandArray[10]);
+					if(the_parser.commandArray[5] == "left" &&
+						the_parser.commandArray[6] == "outer" &&
+							the_parser.commandArray[7] == "join")
+					{
+						RaSQL_Table* t1 = new RaSQL_Table(the_parser.commandArray[3], current_database, isDebug);
+						RaSQL_Table* t2 = new RaSQL_Table(the_parser.commandArray[8], current_database, isDebug);
+
+						//RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, string t2_alias,
+						//string join_type, string w_key, string w_expression, string w_value);
+						RaSQL_Table joinedTable(t1, the_parser.commandArray[4], t2, the_parser.commandArray[9],"left outer join", 
+												the_parser.commandArray[11], the_parser.commandArray[12], the_parser.commandArray[13]);
+					}
+					else if (the_parser.commandArray[5] == "inner" &&
+								the_parser.commandArray[6] == "join")
+					{
+						RaSQL_Table* t1 = new RaSQL_Table(the_parser.commandArray[3], current_database, isDebug);
+						RaSQL_Table* t2 = new RaSQL_Table(the_parser.commandArray[7], current_database, isDebug);
+
+						RaSQL_Table joinedTable(t1, the_parser.commandArray[4], t2, the_parser.commandArray[8],"", 
+												the_parser.commandArray[10], the_parser.commandArray[11], the_parser.commandArray[12]);
+					}
+					
+					else
+					{
+						RaSQL_Table* t1 = new RaSQL_Table(the_parser.commandArray[3], current_database, isDebug);
+						RaSQL_Table* t2 = new RaSQL_Table(the_parser.commandArray[5], current_database, isDebug);
+
+						RaSQL_Table joinedTable(t1, the_parser.commandArray[4], t2, the_parser.commandArray[6],"", 
+												the_parser.commandArray[8], the_parser.commandArray[9], the_parser.commandArray[10]);
+					}
+					
+					
+					//exit(0);
 				}
 				//if dealing with only one table
 				else

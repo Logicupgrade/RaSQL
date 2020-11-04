@@ -26,7 +26,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     //show variables for debugging
-    bool                showDebug = true;
+    bool                showDebug = false;
     bool                isGood = true;
 
     string              tempString = "";
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
             if(tempString[i] == ';')
             {
                 //debug
-                cout<<"Command:"<<DBCommand<<endl;
+                //cout<<"Command:"<<DBCommand<<endl;
 
                 //passese current command string and current db to be managed
                 the_manager.manage_cmd(DBCommand, current_DB);

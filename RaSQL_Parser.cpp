@@ -238,7 +238,7 @@ bool RaSQL_Parser::parseInput2(string cmd_str)
 			}
 
 			//if string == varchar skip '(',')'
-			if(tempString == "varchar")
+			if(tempString == "varchar" || tempString == "char")
 			{
 				temp_index = cmd_str.find(')',i);
 				commandArray[commandCount] = tempString + cmd_str.substr(i+1,temp_index-(i));
