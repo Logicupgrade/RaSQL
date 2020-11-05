@@ -11,15 +11,16 @@ in order for maniputation of data and then updates the table file when done.
 
 #include "RaSQL_Table.h"
 
+//description: counts the '|' chars + 1 in the first line of a table file to get the attribute count
+//input: first line of table file
+//output: number of '|' chars + 1
 int RaSQL_Table::countSchemaAttr(string schemaLine)
-{
-	//count the '|' chars + 1
+{	
 	int count = 0;
 
 	//check for empty file
 	if(schemaLine.length() > 0)
 	{
-
 		count = 1;
 
 		//count schema attributes
@@ -35,10 +36,15 @@ int RaSQL_Table::countSchemaAttr(string schemaLine)
 	return count;
 }
 
-//initializes table_schema, table_schema_w_type, and full_table_schema
+
+
+//description: initializes table_schema, table_schema_w_type, and full_table_schema
+//input: first line of table file
+//output: boolean of success
 bool RaSQL_Table::getSchema( string schema_line )
 {
-	if( int(schema_line.length()) < 1)
+	//checks for empty str
+	if( schema_line.empty() )
 	{
 		return false;
 	}
@@ -137,10 +143,15 @@ bool RaSQL_Table::getSchema( string schema_line )
 	return true;
 }
 
+//description: initializes current_table property as empty 2D array
+//input: none
+//output: boolean of success
 bool RaSQL_Table::makeCurrentTable()
 {
+	//initialize array by allocating table_entries(count) string pointers
 	current_table = new string*[table_entries];
 
+	//loops through array and initilizes array by allocating strings for pointer
 	for(int i=0;i<table_entries;i++)
 	{
 		current_table[i] = new string[schema_attr_count]; 
@@ -148,12 +159,16 @@ bool RaSQL_Table::makeCurrentTable()
 	return true;
 }
 
+//description: references input string to table_schema and returns index of first match
+//input: reference string (possible attribute)
+//output: matching index else -1
 int RaSQL_Table::getSchemaIndex(string possible_attr)
 {
 	
 	//get table schema index for where key
 	for(int i = 0;i<schema_attr_count;i++)
 	{
+		//if input string matches table_schema[i]
 		if(possible_attr == table_schema[i])
 		{
 			return i;
@@ -163,9 +178,14 @@ int RaSQL_Table::getSchemaIndex(string possible_attr)
 	return -1;
 }
 
-//passes in a row to compare with expression
+
+//description: checks if where expression is true or false in given string array (usually table row)
+//input: string array to check and where expression
+//output: returns if where expression is true or false for given string array
+//notes: passes in a row to compare with expression
 bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expressionStr, string where_value)
 {
+	//get given string(check_entry) index of where_key
 	int w_schema_index = getSchemaIndex(where_key);
 	
 	//default to false: nothing will be altered if there is issue
@@ -183,6 +203,7 @@ bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expre
 		return false;
 	}
 
+	//checking for different boolean expressions
 	if(expressionStr == "=")
 	{
 		if(check_entry[w_schema_index] == where_value )
@@ -224,12 +245,19 @@ bool RaSQL_Table::whereMatch(string* check_entry, string where_key, string expre
 	
 }
 
+//description: updates table file
+//input: none
+//output: success boolean
+//notes: writes file after schema
+//notes: skips entry if value at first index is ""
+//**TODO: edit schema input to reflect current attributes
 bool RaSQL_Table::update_table_file()
 {
 	//rewrite data after schema
 	ofstream table_stream;
 	table_stream.open(table_filename, ios::trunc);
 
+	//number of times entries are skipped
 	int skipped = 0;
 
 	//if table file found
@@ -287,6 +315,9 @@ bool RaSQL_Table::update_table_file()
 	return false;
 }
 
+//description: Normal Table Constructor 
+//input: name of the table, name of current database, boolean for debug comments
+//output: none
 RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 {
 	//show variables for debugging or not
@@ -310,41 +341,14 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 		//grabbing schema for use in update (not relevant to this flow)
 		schema_input = tempSchema;
 
+		//initialize schema arrays
 		getSchema(tempSchema);
-		// for(int i=0;i<(schema_attr_count*2);i++)
-		// {
-		// 	cout<<"attr["<<i<<"]:"<<full_table_schema[i]<<endl;
-		// }
-		// for(int i=0;i<(schema_attr_count);i++)
-		// {
-		// 	cout<<"attr w type["<<i<<"]:"<<table_schema_w_type[i]<<endl;
-		// }
-		// for(int i=0;i<(schema_attr_count);i++)
-		// {
-		// 	cout<<"lone attr["<<i<<"]:"<<table_schema[i]<<endl;
-		// }
-		//***replace with getSchema()
-		//update schema attr count
-		//schema_attr_count = countSchemaAttr(tempSchema);
-
-		//instantiate schema array of count
-		//table_schema = new string[schema_attr_count];
-
-		//loop through attributes
-		// for(int i=0;i<schema_attr_count;i++)
-		// {
-		// 	table_schema[i] = tempSchema.substr(0,tempSchema.find(" "));
-
-		// 	if( int( tempSchema.find("|") ) > -1)
-		// 	{
-		// 		tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
-		// 	}
-			
-		// }
 		
 		//Get number of row entries in table
 		string placholder;
 		table_entries = 0;
+
+		//loop through file counting lines in file
 		while(!table_stream.eof())
 		{
 			if(getline(table_stream,placholder))
@@ -352,28 +356,29 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 				table_entries++;
 			}
 		}
-		
-		//add one more for the last line without a '\n' char
-		//table_entries++;
 
 		//create empty 2D array
 		makeCurrentTable();
 
 		//reset ifstream flags
 		table_stream.clear();
+
 		//return stream to beginning
 		table_stream.seekg(0,ios::beg);
-
+		
+		//skips schema
 		getline(table_stream,tempSchema);
 		
 		//fill current table
 		for(int i=0;i<table_entries;i++)
 		{
+			//grabs data row
 			getline(table_stream,tempSchema);
 
+			//loops through data attributes
 			for(int j=0;j<schema_attr_count;j++)
 			{
-				
+				//inserts data into current_table
 				current_table[i][j] = tempSchema.substr(0,tempSchema.find(" "));
 
 				if( int( tempSchema.find("|") ) > -1)
