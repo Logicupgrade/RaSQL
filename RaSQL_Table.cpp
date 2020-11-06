@@ -378,9 +378,10 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 			//loops through data attributes
 			for(int j=0;j<schema_attr_count;j++)
 			{
-				//inserts data into current_table
+				//finds substring until " " and inserts data into current_table
 				current_table[i][j] = tempSchema.substr(0,tempSchema.find(" "));
 
+				//if finds '|' then grabs rest of substring 2 char after that
 				if( int( tempSchema.find("|") ) > -1)
 				{
 					tempSchema = tempSchema.substr(tempSchema.find("|")+2,-1);
@@ -418,46 +419,58 @@ RaSQL_Table::RaSQL_Table(string table_name, string currentDB, bool debugger)
 	table_stream.close();
 }
 
+//description: Table Join Constructor 
+//input: pointer to table 1, alias of table 1, pointer to table 2, alias of table 2, 
+//input: join type as a string, where key, where expression, and where value
+//output: none
 RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, string t2_alias,
 							string join_type, string w_key, string w_expression, string w_value)
 {
 	//cout<<"params:"<<t1_alias<<","<<t2_alias<<","<<join_type<<","<<w_key<<","<<w_expression<<","<<w_value<<endl;
 
+	//adds table name prefix to schema attributes in table 1 and table 2
 	t1->addAttrPrefix(t1_alias);
 	t2->addAttrPrefix(t2_alias);
 	
-	// setup joined attributes
+	// initialize joined attributes of both table 1 and table 2
 	schema_attr_count = t1->schema_attr_count + t2->schema_attr_count;
 
+	//initialize different table schemas
 	table_schema = new string[schema_attr_count];
 	full_table_schema = new string[2*schema_attr_count];
 	table_schema_w_pre = new string[schema_attr_count];
 
+	//fills schema and schema with prefix arrays with values from table 1 and table 2 corresponding schema arrays
+	//fills first part with table 1 values
 	for(int i=0;i<t1->schema_attr_count;i++)
 	{
 		table_schema[i] = t1->table_schema[i];
-		//full_table_schema[i] = t1->full_table_schema[i];
 		table_schema_w_pre[i] = t1->table_schema_w_pre[i];
 	}
+	//fills second part with table 2 values
 	for(int j=t1->schema_attr_count;j<schema_attr_count;j++)
 	{
 		table_schema[j] = t2->table_schema[j-t1->schema_attr_count];
-		//full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count];
 		table_schema_w_pre[j] = t2->table_schema_w_pre[j-t1->schema_attr_count];
 	}
 
+	//fills full_table_schema with values from table 1 and table 2 corresponding schema arrays
+	//fills first part with table 1 values
 	for(int i=0;i<t1->schema_attr_count*2;i++)
 	{
 		full_table_schema[i] = t1->full_table_schema[i];
 	}
+	//fills first part with table 2 values
 	for(int j=t1->schema_attr_count*2;j<schema_attr_count*2;j++)
 	{
 		full_table_schema[j] = t2->full_table_schema[j-t1->schema_attr_count*2];
 	}
 
-	//create full table join
+	//create full table join 
+	//multiply table 1 entry count by table 2 entry count
 	table_entries = t1->table_entries * t2->table_entries;
 
+	//initializes empty current_table 2D array using previous variables
 	makeCurrentTable();
 
 	//fill current table with both table entries
@@ -486,6 +499,9 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 
 	
 	//Refactor at some point
+	//saving initial table_schema values
+	/*replacing table_schema with table_schema_w_pre values in order 
+	to match schema attributes with w_key and w_value */
 	string temp_string[schema_attr_count];
 
 	for(int i=0;i<schema_attr_count;i++)
@@ -502,9 +518,13 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 
 	//display
 
+	//loops through full_table_schema
 	for(int k =0;k<schema_attr_count*2;k++)
 	{
+		//prints attribute
 		cout<<full_table_schema[k]<<" ";
+
+		//after even num of attributes print '|' unless last two
 		if(k%2==1 && k<(schema_attr_count*2 - 1) )
 		{
 			cout<<"| ";
@@ -512,22 +532,31 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 	}
 	cout<<endl;
 	
+	//if "left outer join"
 	if(join_type == "left outer join")
 	{
-		
+		//initialize a count of passed entries
 		int count_passed = 0;
-		for(int l =0;l<table_entries;l++)
+		
+		//loops through table entries
+		for(int l=0;l<table_entries;l++)
 		{
+			//reset passed entry count after last instance of table 1 entries
 			if(l%t1->table_entries == 0)
 			{
 				count_passed = 0;
 			}
 
+			//if row value at where key and where value are equal
 			if(current_table[l][w_key_index] == current_table[l][w_value_index])
 			{
+				//loop through table row values
 				for(int m=0;m<schema_attr_count;m++)
 				{
+					//print table row value
 					cout<<current_table[l][m];
+
+					//print "|" after row value unless its the last one
 					if(m<schema_attr_count-1)
 					{
 						cout<<"|";
@@ -535,15 +564,21 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 				}
 				cout<<endl;
 			}
+			//if where key and where value ar not equal
 			else
 			{
+				//increment passed row count
 				count_passed++;
-				if(count_passed == t1->table_entries)
+
+				//if passed all instances of table one value
+				if(count_passed == t2->table_entries)
 				{
+					//print all table 1 values
 					for(int i=0;i<t1->schema_attr_count;i++)
 					{
 						cout<<current_table[l][i]<<"|";
 					}
+					//print empty "" for all table 2 values
 					for(int j=0;j<t2->schema_attr_count;j++)
 					{
 						if(j<t2->schema_attr_count-1)
@@ -558,16 +593,20 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 		}
 	}
 	
+	//if other type of join (inner joins)
 	else
 	{
 		
-		
+		//loop through table entries
 		for(int l =0;l<table_entries;l++)
 		{
+			//if row value at where key and where value are equal
 			if(current_table[l][w_key_index] == current_table[l][w_value_index])
 			{
+				//loop through table row values
 				for(int m=0;m<schema_attr_count;m++)
 				{
+					//print row values
 					cout<<current_table[l][m];
 					if(m<schema_attr_count-1)
 					{
@@ -597,13 +636,13 @@ RaSQL_Table::RaSQL_Table(RaSQL_Table* t1, string t1_alias, RaSQL_Table* t2, stri
 	// }
 
 	// cout<<"____________________"<<endl;
-	
-	
-	
-
 	 
 }
 
+//description: Delete (filter values) function
+//input: where key, where expression to compare, where value
+//output: returns number of rows "deleted"
+//notes: sets first value in row to "" and is skipped when updating file
 int RaSQL_Table::delete_vals(string where_key, string expressionStr, string where_value)
 {
 	int deleteCount = 0;
@@ -627,10 +666,15 @@ int RaSQL_Table::delete_vals(string where_key, string expressionStr, string wher
 
 
 //TODO: Incorporate whereMatch()
+//description: Update table function
+//input: set key, set value, where key, where expression to compare, where value 
+//output: count of updated rows
 int RaSQL_Table::update_table(string set_key, string set_value, 
 								string where_key, string expressionStr, string where_value)
 {
 	int updatedCount = 0;
+
+	//initializes variables with index of where_key and set_key when matching schema attributes
 	int w_schema_index = getSchemaIndex(where_key);
 	int s_schema_index = getSchemaIndex(set_key);
 
@@ -691,7 +735,10 @@ int RaSQL_Table::update_table(string set_key, string set_value,
 }
 
 
-//return int array of rows that match given constraint(s)
+//description: SQL Where function
+//input: 2D array of expressions, count of expressions 
+//output: returns int array of rows that match given constraint(s)
+//note: uses previously defined Table properties
 bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 {
 	//initialize current number of rows = all rows
@@ -746,6 +793,10 @@ bool RaSQL_Table::where(string** expression_2d_array, int expression_count)
 
 }
 
+//description: SQL Select function
+//input: string array of select values, count of select values 
+//output: success boolean
+//note: uses previously defined Table properties and Table "where" properties
 bool RaSQL_Table::select( string* select_vals, int select_val_count )
 {
 
@@ -855,20 +906,31 @@ bool RaSQL_Table::remove_schema_attr()
 	return true;
 }
 
-//prints variables to the terminal output
+
+//description: Verbose debug flag function
+//input: bool to turn on or off debug mode
+//output: none
+//note: prints variables to the terminal output
 void RaSQL_Table::debugMode( bool toDeOrNotToDe )
 {
+	//changes isDebug Table Property
 	isDebug = toDeOrNotToDe; 
 }
 
-//adds table alias + '.' in front of all attributes 
+
+//description: add schema attribute prefix function
+//input: table name
+//output: none
+//notes: adds table alias + '.' in front of all attributes
 void RaSQL_Table::addAttrPrefix(string table_name)
 {
 	//initialize table schema with prefix 
 	table_schema_w_pre = new string[schema_attr_count];
 
+	//loops through all schema attributes
 	for(int i=0;i<schema_attr_count;i++)
 	{
+		//adds prefix of <table name> + '.' to schema attributes in table_schema array
 		table_schema_w_pre[i] = table_name + '.' + table_schema[i];
 	}
 }
