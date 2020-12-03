@@ -43,7 +43,8 @@ class RaSQL_DB_Manager
 
 	public:
 		RaSQL_DB_Manager(bool debugger);
-		bool manage_cmd(string commandStr, string& current_database);//string* commands, int command_count);
+		bool manage_cmd(string commandStr, string& current_database, bool& is_locked, 
+							bool& has_changes, string* prev_update_attr, string& prev_table);
 		int get_status();
 
 		void debugMode( bool toDeOrNotToDe );

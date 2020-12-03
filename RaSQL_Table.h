@@ -88,6 +88,9 @@ class RaSQL_Table
 
 		void addAttrPrefix(string table_name);
 
+		//update table file
+		bool commit();
+
 		
 		
 };

@@ -81,7 +81,8 @@ and also the table object for manipulating and updating the table data.
 			debugMode(debugger);
 		}
 
-		bool RaSQL_DB_Manager::manage_cmd(string commandStr, string& current_database)//string* commands, int command_count)
+		bool RaSQL_DB_Manager::manage_cmd(string commandStr, string& current_database, bool& is_locked, 
+											bool& has_changes, string* prev_update_attr, string& prev_table)
 		{
 			//error code initialization
 			int error_code = 0;
@@ -474,6 +475,41 @@ and also the table object for manipulating and updating the table data.
 			}
 			else if(the_parser.commandArray[0] == "update")
 			{
+				//************** lock **************************************
+				//lock file name
+				string lock_file_name = "RaSQL_tables/" + current_database +"-"+the_parser.commandArray[1]+".lock";
+
+				//try to read lock file
+				ifstream RaSQL_lock_check;
+				RaSQL_lock_check.open(lock_file_name);
+				
+				//if lock file found return false
+				if( RaSQL_lock_check.good() )
+				{
+					RaSQL_lock_check.close();
+					is_locked = true;
+					cout<<"Error: Table " + the_parser.commandArray[1] + " is locked!"<<endl;
+
+					return false;
+				}
+				
+				has_changes = true;
+				//create lock file
+				ofstream RaSQL_file_lock;
+				RaSQL_file_lock.open(lock_file_name, ios::trunc);
+				RaSQL_file_lock<<"lock"<<endl;
+
+				prev_table = the_parser.commandArray[1];
+
+				prev_update_attr[0] = the_parser.commandArray[3];
+				prev_update_attr[1] = the_parser.commandArray[5];
+				prev_update_attr[2] = the_parser.commandArray[7];
+				prev_update_attr[3] = the_parser.commandArray[8];
+				prev_update_attr[4] = the_parser.commandArray[9];
+
+				//**********************************************************
+
+				
 				//contructs table object with arguments: table name, current database, debug variable(boolean)
 				RaSQL_Table theTable(the_parser.commandArray[1], current_database, isDebug);
 
@@ -514,6 +550,52 @@ and also the table object for manipulating and updating the table data.
 					cout<<deletedRecords<<" records deleted."<<endl;
 				}
 
+				
+			}
+			else if(the_parser.commandArray[0] == "begin" )//&& the_parser.commandArray[1] == "tansaction")
+			{
+				//begin transaction
+				cout<<"Transaction starts."<<endl;
+			}
+			else if(the_parser.commandArray[0] == "commit")
+			{
+				if(!has_changes)
+				{
+					cout<<"Transaction abort."<<endl;
+				}
+				else
+				{
+					RaSQL_Table theTable(prev_table, current_database, isDebug);
+
+					cout<<"Table update attributes{"<<prev_update_attr[0]<<","<<prev_update_attr[1]<<","<<prev_update_attr[2]<<","<<prev_update_attr[3]<<","<<prev_update_attr[4]<<"}"<<endl;
+
+					int modifiedRecords = theTable.update_table(prev_update_attr[0], 
+																	prev_update_attr[1], 
+																		prev_update_attr[2],
+																			prev_update_attr[3],
+																				prev_update_attr[4]);
+
+					//records modified terminal output
+					if(modifiedRecords == 1)
+					{
+						cout<<modifiedRecords<<" record modified."<<endl;
+					}
+					else if(modifiedRecords == 0 || modifiedRecords > 1)
+					{
+						cout<<modifiedRecords<<" records modified."<<endl;
+					}
+
+					theTable.commit();
+					
+					cout<<"Transaction committed."<<endl;
+
+					is_locked = false;
+					has_changes = false;
+
+					string lock_to_remove = "RaSQL_tables/" + current_database +"-"+prev_table+".lock";
+
+					remove( lock_to_remove.c_str() );
+				}
 				
 			}
 			else if(the_parser.commandArray[0] == ".exit")

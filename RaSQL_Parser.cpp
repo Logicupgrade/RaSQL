@@ -1,4 +1,11 @@
+/*Parser Class CPP file
 
+Author: Daniel Hayden
+CS457
+
+parses the input into commandArray property (array of strings)
+
+*/
 #include "RaSQL_Parser.h"
 
 

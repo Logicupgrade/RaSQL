@@ -29,6 +29,16 @@ int main(int argc, char** argv)
     bool                showDebug = false;
     bool                isGood = true;
 
+    //lock indicator variable
+    bool                is_locked = false;
+    //change indicator variable
+    bool                has_changes = false;
+
+    //previous attributes to use in table update
+    string              prev_update_attr[5] = {"","","","",""};
+    //name of previous commands table if available
+    string              prev_table = "";
+
     string              tempString = "";
     string              DBCommand = "";
     string              current_DB = "";
@@ -49,9 +59,9 @@ int main(int argc, char** argv)
 
         i = 0;
         tempString = "";
-        
+
         getline(cin,tempString);
-        
+    
         if( (tempString[0] == '-' && tempString[1] == '-' ) || 
                     tempString[0] == ' ' || 
                         tempString[0] =='\n'||
@@ -77,7 +87,7 @@ int main(int argc, char** argv)
                 //cout<<"Command:"<<DBCommand<<endl;
 
                 //passese current command string and current db to be managed
-                the_manager.manage_cmd(DBCommand, current_DB);
+                the_manager.manage_cmd(DBCommand, current_DB, is_locked, has_changes, prev_update_attr, prev_table);
 
                 DBCommand = "";
                 break;

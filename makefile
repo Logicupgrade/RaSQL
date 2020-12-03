@@ -39,4 +39,4 @@ reset:
 	#removes database files
 	cd RaSQL_dbs; \rm *.txt
 	#removes table files
-	cd RaSQL_tables; \rm *txt
+	cd RaSQL_tables; \rm *txt; \rm *.lock

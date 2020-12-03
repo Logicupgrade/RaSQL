@@ -729,7 +729,7 @@ int RaSQL_Table::update_table(string set_key, string set_value,
 	}
 
 	//update table file
-	update_table_file();
+	//update_table_file();
 	
 	return updatedCount;
 }
@@ -933,4 +933,10 @@ void RaSQL_Table::addAttrPrefix(string table_name)
 		//adds prefix of <table name> + '.' to schema attributes in table_schema array
 		table_schema_w_pre[i] = table_name + '.' + table_schema[i];
 	}
+}
+
+bool RaSQL_Table::commit()
+{
+	//update table file with table object
+	return update_table_file();
 }
