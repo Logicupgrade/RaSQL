@@ -251,7 +251,7 @@ and also the table object for manipulating and updating the table data.
 			{
 				//set current database to commandArray[1]
 				current_database = the_parser.commandArray[1];
-				cout<<"Using Database '"<<current_database<<"'"<<endl;
+				cout<<"Using Database '"<<current_database<<"'."<<endl;
 			}
 
 			//Select Command
@@ -567,23 +567,15 @@ and also the table object for manipulating and updating the table data.
 				{
 					RaSQL_Table theTable(prev_table, current_database, isDebug);
 
-					cout<<"Table update attributes{"<<prev_update_attr[0]<<","<<prev_update_attr[1]<<","<<prev_update_attr[2]<<","<<prev_update_attr[3]<<","<<prev_update_attr[4]<<"}"<<endl;
+					//debug
+					//cout<<"Table update attributes{"<<prev_update_attr[0]<<","<<prev_update_attr[1]<<","<<prev_update_attr[2]<<","<<prev_update_attr[3]<<","<<prev_update_attr[4]<<"}"<<endl;
 
-					int modifiedRecords = theTable.update_table(prev_update_attr[0], 
-																	prev_update_attr[1], 
-																		prev_update_attr[2],
-																			prev_update_attr[3],
-																				prev_update_attr[4]);
+					theTable.update_table(prev_update_attr[0], 
+											prev_update_attr[1], 
+												prev_update_attr[2],
+													prev_update_attr[3],
+														prev_update_attr[4]);
 
-					//records modified terminal output
-					if(modifiedRecords == 1)
-					{
-						cout<<modifiedRecords<<" record modified."<<endl;
-					}
-					else if(modifiedRecords == 0 || modifiedRecords > 1)
-					{
-						cout<<modifiedRecords<<" records modified."<<endl;
-					}
 
 					theTable.commit();
 					
