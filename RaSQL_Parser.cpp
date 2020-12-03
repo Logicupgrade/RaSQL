@@ -8,17 +8,24 @@ parses the input into commandArray property (array of strings)
 */
 #include "RaSQL_Parser.h"
 
-
+//description: parser default constructor 
+//input: none 
 RaSQL_Parser::RaSQL_Parser()
 {
 	//default constructor
 }
 
+//description: lowercase string conversion function 
+//input: length of string, string to lowercase
+//output: lowercase version of input string
 string RaSQL_Parser::strToLower(int strLength, string theString)
 {
+	//array of uppercase alphabet
     char upperCase[26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-    char lowerCase[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    //array of lowercase alphabet
+	char lowerCase[26] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
     
+	//loops through string and aphabet to find matches and replace with lowercase when match found
     for(int i=0;i<strLength;i++)
     {
         for(int j=0;j<26;j++)
@@ -32,6 +39,10 @@ string RaSQL_Parser::strToLower(int strLength, string theString)
     return theString;
 }
 
+//****Function OLD - NOT USED*************
+//description: input command string parser
+//input: command string
+//output: an array of parsed commands is created as a parser property(commandArray)
 bool RaSQL_Parser::parseInput(string cmd_str)
 {
 	int frontIndex = 0;
@@ -45,33 +56,6 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	cmd_str = strToLower(cmd_str.length(),cmd_str);
 	
 	clear();
-
-	
-	
-	// while(!clearEmpty)
-	// {
-	// 	//parse out comments
-	// 	if( (cmd_str[frontIndex] == '-') && (cmd_str[frontIndex+1] == '-') )
-	// 	{
-	// 		int i = 0;
-	// 		while(cmd_str[i] != '\r')
-	// 		{
-	// 			cout<<"cmd_char:"<<cmd_str[i]<<" |cmd_char_int:"<<int(cmd_str[i])<<endl;
-	// 			i++;
-	// 		}
-	// 		i++;
-	// 		frontIndex = i;	
-	// 	}
-	// 	//parse out nulls and new line chars and carriage returns
-	// 	else if(cmd_str[frontIndex] == '\0' || cmd_str[frontIndex] == '\n' || cmd_str[frontIndex] == '\r')
-	// 	{
-	// 		frontIndex++;
-	// 	}
-	// 	else
-	// 	{
-	// 		clearEmpty = true;	
-	// 	}
-	// }
 	
 	//parse out '.exit'
 	if(int(cmd_str.find(".exit"))>-1)
@@ -183,13 +167,6 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 	}
 	
 	//final parsing touch-ups:
-
-	//makes sure multiline cmds don't skip count
-	// if(commandCount > 0)
-	// {
-	// 	commandCount--;
-	// }
-	
 	
 	//Create Table Parsing
 	if(commandArray[0] == "create" && commandArray[1] == "table")
@@ -197,20 +174,14 @@ bool RaSQL_Parser::parseInput(string cmd_str)
 		//remove "(" from first property of schema
 		commandArray[3] = commandArray[3].substr( 1, commandArray[3].length() );
 
-		//remove last char "," from every attribute type
-		// for(int j=4;j<21;j+=2)
-		// {
-		// 	if(commandArray[j] != "")
-		// 	{
-		// 		commandArray[j] = commandArray[j].substr( 0, (commandArray[j].length()-1) );
-		// 	}
-		// }
-
 	}
 
 	return true;
 }
 
+//description: input command string parser
+//input: command string
+//output: an array of parsed commands is created as a parser property(commandArray)
 bool RaSQL_Parser::parseInput2(string cmd_str)
 {
 	string tempString = "";
@@ -232,6 +203,7 @@ bool RaSQL_Parser::parseInput2(string cmd_str)
 							cmd_str[i] == '('||
 								cmd_str[i] == ')' )
 			{
+				//if string is not empty
 				if( !tempString.empty() )
 				{
 					commandArray[commandCount] = tempString;
@@ -265,6 +237,9 @@ bool RaSQL_Parser::parseInput2(string cmd_str)
 	return true;
 }
 
+//description: clears command array
+//input: none
+//output: command array has empty strings
 void RaSQL_Parser::clear()
 {
 	for(int i = 0;i<20;i++)
